@@ -211,17 +211,4 @@ class Group(Base):
         perms = set(self.scopes.split(" "))
 
         return list(perms)
-
-
-class License(Base):
-    __tablename__ = "licenses"
-
-    id = Column(Integer, primary_key=True, index=True)
-    value = Column(String, unique=True, index=True)
-    date_init_validity = Column(DateTime, default=datetime.datetime.now())
-    date_end_validity = Column(DateTime, nullable=True)
-    valid = Column(Boolean, default=True)
-
-    def __init__(self, **kwargs):
-        for key, value in kwargs.items():
-            setattr(self, key, value)
+    
