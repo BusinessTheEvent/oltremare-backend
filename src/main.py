@@ -66,9 +66,11 @@ def db_start():
     db_path = db_url.split("///")[-1].replace("./", "")
     db_path = os.path.join(current_dir, db_path)
     
+    ## TODO: adapt for postgresql
+    
     if os.path.exists(db_path):
         logger.info("Database exists.")
-
+        
         if settings.AUTH_DATABASE_PURGE:
             logger.info("Purging database as environments tell.")
             yn = input("Are you sure you want to delete the database? (y/n): ")
