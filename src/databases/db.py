@@ -7,9 +7,11 @@ import os
 
 logger = get_custom_logger(__name__)
 
+db_url = settings.SQLALCHEMY_DATABASE_DRIVER + "://" + settings.SQLALCHEMY_DATABASE_USER + ":" + settings.SQLALCHEMY_DATABASE_PASSWORD + "@" + settings.SQLALCHEMY_DATABASE_HOST + ":" + settings.SQLALCHEMY_DATABASE_PORT + "/" + settings.SQLALCHEMY_DATABASE_NAME
+
 if not os.environ.get("TESTING"):
-    logger.info(f"Creating connection to: {settings.SQLALCHEMY_AUTH_DATABASE_URL}.")
-    engine_internal_auth = create_engine(settings.SQLALCHEMY_AUTH_DATABASE_URL, connect_args={"check_same_thread": False}) # check_same_thread = False only for sqlite
+    logger.info(f"Creating connection to: {settings.SQLALCHEMY_DATABASE_HOST}:{settings.SQLALCHEMY_DATABASE_PORT}.")
+    engine_internal_auth = create_engine(db_url) # check_same_thread = False only for sqlite
 else: 
     logger.info(f"Creating connection to: dummy internal.")
     engine_internal_auth= create_engine("sqlite:///./auth_test.db", connect_args={"check_same_thread": False})
@@ -73,7 +75,7 @@ def init_users_table(user_model, role_model, pwd_context):
             is_active=True,
             disabled=False,
             scopes="",
-            registered_at=datetime.datetime.utcnow()
+            registered_at=datetime.datetime.now(datetime.UTC)
         )
         new_user.role=db.query(role_model).filter(role_model.name == "ADMIN").first()
         db.add(new_user)

@@ -22,7 +22,12 @@ logger.info("Loading environment variables from .env file.")
 class Settings(BaseSettings):
 
     # Databases
-    SQLALCHEMY_AUTH_DATABASE_URL: str = "sqlite:///./default_auth_db.sqlite3"
+    SQLALCHEMY_DATABASE_HOST: str = ""
+    SQLALCHEMY_DATABASE_USER: str = ""
+    SQLALCHEMY_DATABASE_PASSWORD: str = ""
+    SQLALCHEMY_DATABASE_DRIVER: str = ""
+    SQLALCHEMY_DATABASE_NAME: str = ""
+    SQLALCHEMY_DATABASE_PORT: str = ""
 
     # Auth db start options
     AUTH_DATABASE_CHECK: bool = False
