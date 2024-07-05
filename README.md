@@ -4,11 +4,11 @@ Backend per Oltremare
 
 # Quickstart
 
-**(Only once)** python3 -m venv ./venv
+**(Only once)** `python3 -m venv ./venv`
 
-**(To activate environment on linux)** source ./venv/bin/activate
+**(To activate environment on linux)** `source ./venv/bin/activate`
 
-**(To activate environment on windows)** .\venv\Scripts\activate
+**(To activate environment on windows)** `.\venv\Scripts\activate`
 
 **(To run app)** execute run.sh
 
