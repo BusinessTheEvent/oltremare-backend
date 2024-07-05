@@ -10,7 +10,7 @@ Backend per Oltremare
 
 **(To activate environment on windows)** .\venv\Scripts\activate
 
-*(To run app)* execute run.sh
+**(To run app)** execute run.sh
 
 **(To run database)** `sudo docker run --name oltremareDB \
  -e POSTGRES_PASSWORD=oltremare-password \
