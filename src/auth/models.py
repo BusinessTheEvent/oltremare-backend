@@ -21,6 +21,8 @@ class User(Base):
     id = Column(Integer, primary_key=True, index=True)
     username = Column(String, unique=True, index=True)
     name = Column(String, unique=False)
+    surname = Column(String, unique=False)
+    birthdate = Column(DateTime, nullable=True)
     password = Column(String)
     is_active = Column(Boolean, default=True)
     disabled = Column(Boolean, default=False)
