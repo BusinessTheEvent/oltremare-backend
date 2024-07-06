@@ -42,6 +42,8 @@ class User(Base):
     def __init__(self, **kwargs):
         self.username = kwargs.get('username')
         self.name = kwargs.get('name')
+        self.surname = kwargs.get('surname')
+        self.birthdate = kwargs.get('birthdate')
         self.password = kwargs.get('password')
         self.is_active = kwargs.get('is_active')
         self.additional_scopes = kwargs.get('additional_scopes')
