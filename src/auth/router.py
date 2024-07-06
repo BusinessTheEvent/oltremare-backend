@@ -35,6 +35,8 @@ def register(user_data: authentication_schemas.UserRegister, db: Annotated[Sessi
         new_user = User(
             username=user_data.username,
             name=user_data.name,
+            surname=user_data.surname,
+            birthdate=user_data.birthdate,
             password=get_password_hash(user_data.password.get_secret_value()),
             is_active=user_data.is_active,
             disabled=user_data.disabled,
