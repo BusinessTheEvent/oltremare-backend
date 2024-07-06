@@ -106,3 +106,4 @@ teacher_subject  -->  teacher : id_teacher:id;
 user_group  -->  groups : group_id:id;
 user_group  -->  users : user_id:id;
 users  -->  roles : role_id:id;
+```
