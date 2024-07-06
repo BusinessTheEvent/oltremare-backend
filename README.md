@@ -22,6 +22,7 @@ Backend per Oltremare
 ## DB schema
 
 ```mermaid
+
 classDiagram
 direction BT
 class booking {
@@ -94,14 +95,25 @@ class users {
 }
 
 booking  -->  student : id_student:id
+
 booking  -->  teacher : id_teacher:id
+
 student  -->  school_grade : school_grade:id
+
 student  -->  users : id_user:id
+
 teacher  -->  users : user_id:id
+
 teacher_school  -->  school_grade : id_school:id
+
 teacher_school  -->  teacher : id_teacher:id
+
 teacher_subject  -->  subjects : id_subject:id
+
 teacher_subject  -->  teacher : id_teacher:id
+
 user_group  -->  groups : group_id:id
+
 user_group  -->  users : user_id:id
+
 users  -->  roles : role_id:id
