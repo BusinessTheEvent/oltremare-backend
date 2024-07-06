@@ -10,6 +10,7 @@ import os
 from src.databases.db import create_all, engine_internal_auth, init_roles_table, init_users_table
 from src.default_logger import get_custom_logger
 from src.auth.router import router as auth_router
+from src.v01.router import router as v01_router
 from sqlalchemy.orm import Session
 from src.auth.middlewares import AuthCookieMiddleware
 
@@ -33,6 +34,7 @@ if settings.USE_COOKIES_AUTH:
 print("Using cookies for authentication: ", settings.USE_COOKIES_AUTH)
 
 app.include_router(auth_router, prefix="/auth")
+app.include_router(v01_router, prefix="/v01", tags=["v01"])
 
 
 @app.get("/")

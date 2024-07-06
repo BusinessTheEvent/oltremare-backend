@@ -257,7 +257,7 @@ def add_permission(current_user: Annotated[authentication_schemas.UserBase, Depe
 
     if user is not None:
         if user.username == current_user.username:
-            logger.info(f"User {user.email} tried to change his own scopes.")
+            logger.info(f"User {user.username} tried to change his own scopes.")
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="You cannot change your own scopes.")
 
         logger.debug(f"Adding scopes {data.additional_scopes} to user {user.username}")
