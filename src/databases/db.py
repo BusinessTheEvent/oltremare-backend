@@ -1,5 +1,5 @@
 import datetime
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker, declarative_base, Session
 from ..default_logger import get_custom_logger
 from ..config import settings
@@ -9,21 +9,23 @@ logger = get_custom_logger(__name__)
 
 db_url = settings.SQLALCHEMY_DATABASE_DRIVER + "://" + settings.SQLALCHEMY_DATABASE_USER + ":" + settings.SQLALCHEMY_DATABASE_PASSWORD + "@" + settings.SQLALCHEMY_DATABASE_HOST + ":" + settings.SQLALCHEMY_DATABASE_PORT + "/" + settings.SQLALCHEMY_DATABASE_NAME
 
-if not os.environ.get("TESTING"):
+
+
+if settings.TESTING == False:
     logger.info(f"Creating connection to: {settings.SQLALCHEMY_DATABASE_HOST}:{settings.SQLALCHEMY_DATABASE_PORT}.")
-    engine_internal_auth = create_engine(db_url) # check_same_thread = False only for sqlite
+    engine_internal = create_engine(db_url) # check_same_thread = False only for sqlite
 else: 
     logger.info(f"Creating connection to: dummy internal.")
-    engine_internal_auth= create_engine("sqlite:///./auth_test.db", connect_args={"check_same_thread": False})
+    engine_internal= create_engine("sqlite:///./auth_test.db", connect_args={"check_same_thread": False})
 
 
-InternalSession = sessionmaker(autocommit=False, autoflush=False, bind=engine_internal_auth)
+InternalSession = sessionmaker(autocommit=False, autoflush=False, bind=engine_internal)
 
 
 Base = declarative_base()
 
 
-def get_auth_db():
+def get_db():
     db = InternalSession()
     try:
         yield db
@@ -31,7 +33,7 @@ def get_auth_db():
         db.close()
 
 def create_all():
-    Base.metadata.create_all(bind=engine_internal_auth)
+    Base.metadata.create_all(bind=engine_internal)
 
 def init_users_table(model):
     pass
@@ -57,7 +59,7 @@ def init_roles_table(role_model):
         }
     ]
     
-    with Session(engine_internal_auth) as db:
+    with Session(engine_internal) as db:
         for role in roles:
             db_role = role_model(**role)
             db.add(db_role)
@@ -67,7 +69,7 @@ def init_roles_table(role_model):
 
 def init_users_table(user_model, role_model, pwd_context):
     ## TODO: find a way to import data from configs
-    with Session(engine_internal_auth) as db:
+    with Session(engine_internal) as db:
         new_user = user_model(
             username="admin",
             name="Administrator",
@@ -83,3 +85,16 @@ def init_users_table(user_model, role_model, pwd_context):
 
         if settings.DEBUG:
             logger.debug(f"User {new_user.username} created")
+            
+def init_tables_with_file(file, db: Session):
+    ## EXECUTE CONTENT OF FILE AS RAW QUERY
+    if os.path.exists(file):
+        with open(file, 'r') as f:
+            query = f.read()
+    
+        with engine_internal.connect() as conn:
+            conn.execute(text(query))
+        
+        logger.info(f"Table <{file}> initialized.")
+    else:
+        logger.error(f"File <{file}> does not exist.")

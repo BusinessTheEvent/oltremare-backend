@@ -16,9 +16,4 @@ Backend per Oltremare
 
 **(To run app)** execute run.sh
 
-**(To run database)** `sudo docker run --name oltremareDB -e POSTGRES_PASSWORD=oltremare-password -e POSTGRES_USER=oltremare-user -e POSTGRES_DB=oltremare-dev -p 5432:5432 postgres`
-
-
-## DB schema
-
-TODO
+**(To run database)** `sudo docker run --rm --name oltremareDB -e POSTGRES_PASSWORD=oltremare-password -e POSTGRES_USER=oltremare-user -e POSTGRES_DB=oltremare-dev -p 5432:5432 postgres`

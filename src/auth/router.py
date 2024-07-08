@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 from src.config import settings
 from .models import Group, Role, User
 from .security import authenticate_user, create_access_token, get_current_active_user, get_password_hash, verify_password
-from ..databases.db import get_auth_db
+from ..databases.db import get_db
 from ..schemas import authentication_schemas
 from ..default_logger import get_custom_logger
 from fastapi.security import OAuth2PasswordRequestForm
@@ -20,7 +20,7 @@ logger = get_custom_logger(__name__)
 
 ## remember to set role dynamically when creating users
 @router.post("/register", response_model=authentication_schemas.UserResponse, tags=["User management"])
-def register(user_data: authentication_schemas.UserRegister, db: Annotated[Session, Depends(get_auth_db)]) -> authentication_schemas.UserResponse:
+def register(user_data: authentication_schemas.UserRegister, db: Annotated[Session, Depends(get_db)]) -> authentication_schemas.UserResponse:
 
     logger.debug(f"Registering user {user_data.username}")
 
@@ -72,7 +72,7 @@ def register(user_data: authentication_schemas.UserRegister, db: Annotated[Sessi
         return new_user
         
 @router.post("/token", name="token", response_model=authentication_schemas.Token, tags=["User management"])
-def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()], db: Annotated[Session, Depends(get_auth_db)]):
+def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()], db: Annotated[Session, Depends(get_db)]):
     
     logger.debug(f"Logging in user {form_data.username}")
     user = authenticate_user(db, form_data.username, form_data.password)
@@ -117,7 +117,7 @@ def logout():
     
 
 @router.get("/me", response_model=authentication_schemas.UserResponse, tags=["User management"])
-def read_users_me(request: Request, current_user: Annotated[authentication_schemas.UserBase, Depends(get_current_active_user)], db: Annotated[Session, Depends(get_auth_db)]) -> Union[authentication_schemas.UserResponse, HTTPException]:
+def read_users_me(request: Request, current_user: Annotated[authentication_schemas.UserBase, Depends(get_current_active_user)], db: Annotated[Session, Depends(get_db)]) -> Union[authentication_schemas.UserResponse, HTTPException]:
     
     pprint.pprint(request.cookies.get("access_token"))
     current_user = db.query(User).filter(User.username == current_user.username).first()
@@ -126,7 +126,7 @@ def read_users_me(request: Request, current_user: Annotated[authentication_schem
 
 
 @router.patch('/password_reset', tags=["User management"])
-def password_reset(current_user: Annotated[authentication_schemas.UserBase, Depends(get_current_active_user)], db: Annotated[Session, Depends(get_auth_db)], data: authentication_schemas.PasswordResetRequest):
+def password_reset(current_user: Annotated[authentication_schemas.UserBase, Depends(get_current_active_user)], db: Annotated[Session, Depends(get_db)], data: authentication_schemas.PasswordResetRequest):
 
     if current_user is None:
         logger.error("Problem with user authentication or in OAuth2 scheme")
@@ -160,7 +160,7 @@ def password_reset(current_user: Annotated[authentication_schemas.UserBase, Depe
 
 
 @router.delete("/delete", tags=["User management"])
-def delete_user(current_user: Annotated[authentication_schemas.UserBase, Depends(get_current_active_user)], db: Annotated[Session, Depends(get_auth_db)], data: authentication_schemas.UserUsername):
+def delete_user(current_user: Annotated[authentication_schemas.UserBase, Depends(get_current_active_user)], db: Annotated[Session, Depends(get_db)], data: authentication_schemas.UserUsername):
     """
         Deletes the specified user from the database.
     """
@@ -187,7 +187,7 @@ def delete_user(current_user: Annotated[authentication_schemas.UserBase, Depends
 
 
 @router.get('/scopes', response_model=authentication_schemas.UserScopes, tags=["Scopes management"])
-def get_own_scopes(current_user: Annotated[authentication_schemas.UserBase, Depends(get_current_active_user)], db: Annotated[Session, Depends(get_auth_db)]) -> Union[HTTPException, authentication_schemas.UserScopes]:
+def get_own_scopes(current_user: Annotated[authentication_schemas.UserBase, Depends(get_current_active_user)], db: Annotated[Session, Depends(get_db)]) -> Union[HTTPException, authentication_schemas.UserScopes]:
     """
         Returns the scopes of the user 
     """
@@ -216,7 +216,7 @@ def get_own_scopes(current_user: Annotated[authentication_schemas.UserBase, Depe
 
 
 @router.post('/scopes', response_model=authentication_schemas.UserScopes, tags=["Scopes management"])
-def get_scopes(current_user: Annotated[authentication_schemas.UserBase, Depends(get_current_active_user)], db: Annotated[Session, Depends(get_auth_db)], data: authentication_schemas.GetScopesRequest) -> Union[HTTPException, authentication_schemas.UserScopes]:
+def get_scopes(current_user: Annotated[authentication_schemas.UserBase, Depends(get_current_active_user)], db: Annotated[Session, Depends(get_db)], data: authentication_schemas.GetScopesRequest) -> Union[HTTPException, authentication_schemas.UserScopes]:
     """
         Returns the scopes of the specified user.
     """
@@ -247,7 +247,7 @@ def get_scopes(current_user: Annotated[authentication_schemas.UserBase, Depends(
 
 
 @router.patch('/scopes/add', response_model=authentication_schemas.UserAdditionalScopes, tags=["Scopes management"])
-def add_permission(current_user: Annotated[authentication_schemas.UserBase, Depends(get_current_active_user)], db: Annotated[Session, Depends(get_auth_db)], data: authentication_schemas.ModifyPermissionRequest) -> Union[HTTPException, authentication_schemas.UserAdditionalScopes]:
+def add_permission(current_user: Annotated[authentication_schemas.UserBase, Depends(get_current_active_user)], db: Annotated[Session, Depends(get_db)], data: authentication_schemas.ModifyPermissionRequest) -> Union[HTTPException, authentication_schemas.UserAdditionalScopes]:
     """
         Adds a scopes to the specified user.
     """
@@ -274,7 +274,7 @@ def add_permission(current_user: Annotated[authentication_schemas.UserBase, Depe
     
 
 @router.post('/scopes/delete', response_model=authentication_schemas.UserAdditionalScopes, tags=["Scopes management"])
-def remove_permission(current_user: Annotated[authentication_schemas.UserBase, Depends(get_current_active_user)], db: Annotated[Session, Depends(get_auth_db)], data: authentication_schemas.ModifyPermissionRequest) -> Union[HTTPException, authentication_schemas.UserAdditionalScopes]:
+def remove_permission(current_user: Annotated[authentication_schemas.UserBase, Depends(get_current_active_user)], db: Annotated[Session, Depends(get_db)], data: authentication_schemas.ModifyPermissionRequest) -> Union[HTTPException, authentication_schemas.UserAdditionalScopes]:
     """
     Removes a scopes from the specified user.
     """
@@ -303,7 +303,7 @@ def remove_permission(current_user: Annotated[authentication_schemas.UserBase, D
 ## GROUPS MANAGEMENT ##
 
 @router.get('/groups', response_model=authentication_schemas.GroupBaseList, tags=["Groups management"])
-def get_available_groups(current_user: Annotated[authentication_schemas.UserBase, Depends(get_current_active_user)], db: Annotated[Session, Depends(get_auth_db)]) -> Union[HTTPException, authentication_schemas.GroupBaseList]:
+def get_available_groups(current_user: Annotated[authentication_schemas.UserBase, Depends(get_current_active_user)], db: Annotated[Session, Depends(get_db)]) -> Union[HTTPException, authentication_schemas.GroupBaseList]:
     """
         Returns the available groups.
     """
@@ -312,7 +312,7 @@ def get_available_groups(current_user: Annotated[authentication_schemas.UserBase
 
     
 @router.put('/groups', response_model=authentication_schemas.GroupBase, tags=["Groups management"])
-def create_group(current_user: Annotated[authentication_schemas.UserBase, Depends(get_current_active_user)], db: Annotated[Session, Depends(get_auth_db)], data: authentication_schemas.GroupRequest) -> Union[HTTPException, authentication_schemas.GroupBase]:
+def create_group(current_user: Annotated[authentication_schemas.UserBase, Depends(get_current_active_user)], db: Annotated[Session, Depends(get_db)], data: authentication_schemas.GroupRequest) -> Union[HTTPException, authentication_schemas.GroupBase]:
     """
         Create a new group.
     """
@@ -331,7 +331,7 @@ def create_group(current_user: Annotated[authentication_schemas.UserBase, Depend
 
 
 @router.delete('/groups', tags=["Groups management"])
-def delete_group(current_user: Annotated[authentication_schemas.UserBase, Depends(get_current_active_user)], db: Annotated[Session, Depends(get_auth_db)], data: authentication_schemas.GroupRequest):
+def delete_group(current_user: Annotated[authentication_schemas.UserBase, Depends(get_current_active_user)], db: Annotated[Session, Depends(get_db)], data: authentication_schemas.GroupRequest):
     """
         Deletes the specified group from the database.
     """
@@ -352,7 +352,7 @@ def delete_group(current_user: Annotated[authentication_schemas.UserBase, Depend
 
 
 @router.get('/groups/users', response_model=authentication_schemas.UserGroups, tags=["Groups management"])
-def get_own_groups(current_user: Annotated[authentication_schemas.UserBase, Depends(get_current_active_user)], db: Annotated[Session, Depends(get_auth_db)]) -> Union[HTTPException, authentication_schemas.UserGroups]:
+def get_own_groups(current_user: Annotated[authentication_schemas.UserBase, Depends(get_current_active_user)], db: Annotated[Session, Depends(get_db)]) -> Union[HTTPException, authentication_schemas.UserGroups]:
     """
         Returns the groups of the user 
     """
@@ -365,7 +365,7 @@ def get_own_groups(current_user: Annotated[authentication_schemas.UserBase, Depe
     
 
 @router.post('/groups/users', response_model=authentication_schemas.UserGroups, tags=["Groups management"])
-def get_user_groups(current_user: Annotated[authentication_schemas.UserBase, Depends(get_current_active_user)], db: Annotated[Session, Depends(get_auth_db)], data: Annotated[authentication_schemas.UserGroupsRequest, None]) -> Union[HTTPException, authentication_schemas.UserGroups]:
+def get_user_groups(current_user: Annotated[authentication_schemas.UserBase, Depends(get_current_active_user)], db: Annotated[Session, Depends(get_db)], data: Annotated[authentication_schemas.UserGroupsRequest, None]) -> Union[HTTPException, authentication_schemas.UserGroups]:
     """
         Returns the groups of the user 
     """
@@ -379,7 +379,7 @@ def get_user_groups(current_user: Annotated[authentication_schemas.UserBase, Dep
     
 
 @router.patch('/groups/users/add', response_model=authentication_schemas.UserGroups, tags=["Groups management"])
-def add_group(current_user: Annotated[authentication_schemas.UserBase, Depends(get_current_active_user)], db: Annotated[Session, Depends(get_auth_db)], data: Annotated[authentication_schemas.UserGroupsModifyRequest, None]) -> Union[HTTPException, authentication_schemas.UserGroups]:
+def add_group(current_user: Annotated[authentication_schemas.UserBase, Depends(get_current_active_user)], db: Annotated[Session, Depends(get_db)], data: Annotated[authentication_schemas.UserGroupsModifyRequest, None]) -> Union[HTTPException, authentication_schemas.UserGroups]:
     """
         Adds a group to the specified user.
     """
@@ -410,7 +410,7 @@ def add_group(current_user: Annotated[authentication_schemas.UserBase, Depends(g
     
 
 @router.post('/groups/users/delete', response_model=authentication_schemas.UserGroups, tags=["Groups management"])
-def remove_user_groups(current_user: Annotated[authentication_schemas.UserBase, Depends(get_current_active_user)], db: Annotated[Session, Depends(get_auth_db)], data: Annotated[authentication_schemas.UserGroupsModifyRequest, None]) -> Union[HTTPException, authentication_schemas.UserGroups]:
+def remove_user_groups(current_user: Annotated[authentication_schemas.UserBase, Depends(get_current_active_user)], db: Annotated[Session, Depends(get_db)], data: Annotated[authentication_schemas.UserGroupsModifyRequest, None]) -> Union[HTTPException, authentication_schemas.UserGroups]:
     """
         Removes a group from the specified user.
     """

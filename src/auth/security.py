@@ -4,7 +4,7 @@ from fastapi import Depends, HTTPException, Security, status
 from passlib.context import CryptContext
 from pydantic import ValidationError
 from .models import User
-from ..databases.db import get_auth_db
+from ..databases.db import get_db
 from ..config import settings
 from ..default_logger import get_custom_logger
 from jose import JWTError, jwt
@@ -143,7 +143,7 @@ def create_access_token(data: dict, expires_delta: Optional[datetime.timedelta] 
 
     return encoded_jwt
 
-async def get_current_user(security_scopes: SecurityScopes, token: Annotated[str, Depends(oauth2_scheme)], db: Annotated[Session, Depends(get_auth_db)]) -> User:
+async def get_current_user(security_scopes: SecurityScopes, token: Annotated[str, Depends(oauth2_scheme)], db: Annotated[Session, Depends(get_db)]) -> User:
     """
     Retrieves the current user based on the provided security scopes and token.
 
