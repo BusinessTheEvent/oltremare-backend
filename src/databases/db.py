@@ -94,6 +94,7 @@ def init_tables_with_file(file, db: Session):
     
         with engine_internal.connect() as conn:
             conn.execute(text(query))
+            conn.commit()
         
         logger.info(f"Table <{file}> initialized.")
     else:
