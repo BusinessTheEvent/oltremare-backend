@@ -18,8 +18,7 @@ class Subject(BaseModel):
     id_subject: int
     name: str
 
-class Booking(BaseModel):
-    id_booking: int
+class BookingSchema(BaseModel):
     id_student: int
     id_teacher: int
     id_school_grade: int

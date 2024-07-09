@@ -39,6 +39,10 @@ class Booking(Base):
     insert_id_user = Column(Integer, nullable=False)
     insert_date = Column(Date, nullable=False)
     insert_time = Column(Time, nullable=False)
+    
+    def _init__(self, **kwargs):
+        for key, value in kwargs.items():
+            setattr(self, key, value)
 
 class TeacherSchoolSubject(Base):
     __tablename__ = 'teacher_school_subject'
