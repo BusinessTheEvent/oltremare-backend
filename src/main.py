@@ -144,7 +144,8 @@ def db_start():
     logger.info("Database initialization complete.")
 
 db_start()
-init_tables_with_file("src/databases/db_init.sql", db= Annotated[Session, Depends(get_db)])
+if(settings.AUTH_DATABASE_CHECK):
+    init_tables_with_file("src/databases/db_init.sql", db= Annotated[Session, Depends(get_db)])
 
 @app.get("/info")
 def get_hardware_info():

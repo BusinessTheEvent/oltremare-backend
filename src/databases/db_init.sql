@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS "subjects" (
 	"id_subject" bigint GENERATED ALWAYS AS IDENTITY NOT NULL UNIQUE,
 	"name" text NOT NULL,
 	PRIMARY KEY ("id_subject")
-);
+); 
 
 CREATE TABLE IF NOT EXISTS "booking" (
 	"id_booking" bigint GENERATED ALWAYS AS IDENTITY NOT NULL UNIQUE,

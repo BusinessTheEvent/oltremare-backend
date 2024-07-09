@@ -177,7 +177,7 @@ class Role(Base):
 class Group(Base):
     __tablename__ = "groups"
 
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(Integer, primary_key=True, index=True) 
     name = Column(String, unique=True, index=True)
     scopes = Column(String, default="")
 

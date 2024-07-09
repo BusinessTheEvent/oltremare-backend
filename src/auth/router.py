@@ -438,3 +438,5 @@ def remove_user_groups(current_user: Annotated[authentication_schemas.UserBase, 
         logger.info(f"Groups for user {user.username} succesfully updated by {current_user.username}.")
 
         return user
+    
+
