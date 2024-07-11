@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS "student" (
 );
 
 CREATE TABLE IF NOT EXISTS "teacher" (
-	"id" bigint GENERATED ALWAYS AS IDENTITY NOT NULL UNIQUE,
+	"id" bigint NOT NULL,
 	PRIMARY KEY ("id")
 );
 

@@ -1,12 +1,11 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from src.auth.models import User
-from src.v01.models import Booking
+from src.v01.models import Booking, Teacher, Student
 from src.databases.db import get_db
 from src.default_logger import get_custom_logger
 from src.schemas.v01_schemas import BookingSchema
 from fastapi import HTTPException
-from default_logger import get_custom_logger
 
 logger = get_custom_logger(__name__)
 
@@ -33,8 +32,23 @@ def get_user(user_id: int, db: Session = Depends(get_db)):
 #accessibile solo da admin
 @router.get("/booking/all")
 def get_all_booking(db: Session = Depends(get_db)):
-    booking = db.query(Booking).all()
+    booking = db.query(User).filter(User.id == user_id).all()
     return booking
+
+#get all teacher
+@router.get("/booking/all_teacher")
+def get_all_booking(db: Session = Depends(get_db)):
+    return db.query(User,Teacher).join(Teacher, User.id == Teacher.id).all()
+
+#get all teacher groub by subject
+@router.get("/booking/all_teacher_by_subject")
+def get_all_booking(db: Session = Depends(get_db)):
+    return db.query(User,Teacher).join(Teacher, User.id == Teacher.id).all()
+
+#get all student
+@router.get("/booking/all_student")
+def get_all_booking(db: Session = Depends(get_db)):    
+    return db.query(User,Student).join(Student, User.id == Student.id).all()
 
 #accessibile da tutti
 @router.get("/booking/{id_booking}")
@@ -68,7 +82,7 @@ def create_booking(booking_new: BookingSchema, db: Session = Depends(get_db)):
 #rimozione di una prenotazione
 @router.delete("/booking/{id_booking}")
 def delete_booking(id_booking: int, db: Session = Depends(get_db)):
-    booking = db.query(Booking).filter(Booking.id == id_booking).first()
+    booking = db.query(Booking).filter(Booking.id_booking == id_booking).first()
     db.delete(booking)
     db.commit()
     return HTTPException(status_code=200, detail="Booking deleted successfully")
