@@ -27,6 +27,7 @@ class BookingSchema(BaseModel):
     end_datetime: datetime.datetime
     duration: int
     notes: str
+    attended: bool
     insert_id_user: int
     insert_date: datetime.date
     insert_time: datetime.time

@@ -38,6 +38,7 @@ CREATE TABLE IF NOT EXISTS "booking" (
 	"end_datetime" timestamp with time zone NOT NULL,
 	"duration" bigint NOT NULL,
 	"notes" text,
+	"attended"	boolean NOT NULL,
 	"insert_id_user" bigint NOT NULL,
 	"insert_date" date NOT NULL,
 	"insert_time" time without time zone NOT NULL,

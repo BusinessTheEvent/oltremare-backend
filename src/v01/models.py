@@ -36,6 +36,7 @@ class Booking(Base):
     end_datetime = Column(DateTime, nullable=False)
     duration = Column(Integer, nullable=False)
     notes = Column(String)
+    attended = Column(Boolean, nullable=False)
     insert_id_user = Column(Integer, nullable=False)
     insert_date = Column(Date, nullable=False)
     insert_time = Column(Time, nullable=False)
