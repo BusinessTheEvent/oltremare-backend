@@ -38,7 +38,7 @@ class User(Base):
     role = relationship("Role", back_populates="users")
     groups = relationship("Group", secondary=user_group_table, back_populates="users")
 
-    
+
     def __init__(self, **kwargs):
         self.username = kwargs.get('username')
         self.name = kwargs.get('name')

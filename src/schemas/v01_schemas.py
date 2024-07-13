@@ -1,28 +1,28 @@
 import datetime
 from pydantic import BaseModel
+import datetime
+from pydantic import BaseModel
 
 class SchoolGrade(BaseModel):
-    id_school_grade: int
     grade: str
     price: float
 
 class Student(BaseModel):
     id: int
-    id_school_grade: int
-    preliminary_meeting: bool
+    name: str
+    surname: str
+    username: str
 
 class Teacher(BaseModel):
     id: int
 
 class Subject(BaseModel):
-    id_subject: int
     name: str
 
 class BookingSchema(BaseModel):
-    id_student: int
-    id_teacher: int
-    id_school_grade: int
-    id_subject: int
+    teacher: Teacher
+    subject: Subject
+    school_grade: SchoolGrade
     start_datetime: datetime.datetime
     end_datetime: datetime.datetime
     duration: int
@@ -32,10 +32,6 @@ class BookingSchema(BaseModel):
     insert_date: datetime.date
     insert_time: datetime.time
 
-class TeacherSchoolSubject(BaseModel):
-    id: int
-    id_school_grade: int
-    id_subject: int
-
-class Chief(BaseModel):
-    id: int
+class BookingResponseSchema(BaseModel):
+    student_data: Student
+    booking_data: BookingSchema

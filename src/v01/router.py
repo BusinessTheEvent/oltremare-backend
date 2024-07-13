@@ -4,7 +4,7 @@ from src.auth.models import User
 from src.v01.models import Booking, Teacher, Student, TeacherSchoolSubject, Subject, SchoolGrade
 from src.databases.db import get_db
 from src.default_logger import get_custom_logger
-from src.schemas.v01_schemas import BookingSchema
+from src.schemas.v01_schemas import BookingResponseSchema, BookingSchema
 from fastapi import HTTPException
 from sqlalchemy import extract  
 
@@ -39,7 +39,7 @@ def get_all_booking(db: Session = Depends(get_db)):
 
 #get all teacher
 @router.get("/booking/all_teacher")
-def get_all_booking(db: Session = Depends(get_db)):
+def get_all_teacher(db: Session = Depends(get_db)):
     # Query and join to get necessary data
     teachers_bookings = db.query(Teacher, Booking).join(Booking, Teacher.id == Booking.id_teacher).all()
 
@@ -73,18 +73,16 @@ def get_all_booking(db: Session = Depends(get_db)):
     return result
 
 #get teacher group by subject
-@router.get("/booking/get_teacher_by_school_and_subject/{id_subject}{id_school_grade}")
-def get_all_booking(id_subject: int, id_school_grade: int,db: Session = Depends(get_db)):
+@router.get("/booking/get_teacher_by_school_and_subject/{id_school_grade}/{id_subject}")
+def get_teacher_by_subject(id_subject: int, id_school_grade: int,db: Session = Depends(get_db)):
     # Query and join to get necessary data
     list = db.query(Teacher, TeacherSchoolSubject, Subject)\
                 .join(Teacher, Teacher.id == TeacherSchoolSubject.id)\
                 .join(Subject, Subject.id_subject == TeacherSchoolSubject.id_subject)\
                 .filter(Subject.id_subject == id_subject, TeacherSchoolSubject.id_school_grade == id_school_grade)\
                 .all()
-    
-    #TODO: finish and test this
 
-    print(list)
+    #TODO: finish and test this
 
     # Prepare the response in a serializable format
     result = []
@@ -148,37 +146,20 @@ def get_all_booking(id_subject: int, id_school_grade: int,db: Session = Depends(
 
 #     return result
 
-#get all student
-@router.get("/booking/all_student")
-def get_all_booking(db: Session = Depends(get_db)):
+# get all student's booking
+@router.get("/booking/all_student", response_model=list[BookingResponseSchema])
+def get_all_students_booking(db: Session = Depends(get_db)) -> list[BookingResponseSchema]:
     # Query and join to get necessary data
     students_bookings = db.query(Student, Booking).join(Booking, Student.id == Booking.id_student).all()
+
 
     # Prepare the response in a serializable format
     result = []
     for student, booking in students_bookings:
-        students_data = {
-            'id': student.id,
-            # Include other attributes of Teacher model if needed
-        }
-        booking_data = {
-            'id_booking': booking.id_booking,
-            'id_student': booking.id_student,
-            'id_teacher': booking.id_teacher,
-            'id_school_grade': booking.id_school_grade,
-            'id_subject': booking.id_subject,
-            'start_datetime': booking.start_datetime,
-            'end_datetime': booking.end_datetime,
-            'duration': booking.duration,
-            'notes': booking.notes,
-            'attended': booking.attended,
-            'insert_id_user': booking.insert_id_user,
-            'insert_date': booking.insert_date,
-            'insert_time': booking.insert_time
-        }
+        
         result.append({
-            'student': students_data,
-            'booking': booking_data
+            'student_data': student.user,
+            'booking_data': booking
         })
 
     return result
@@ -249,4 +230,11 @@ def get_booking_by_month_per_teacher(month: int, id_teacher: int, db: Session = 
     booking = db.query(Booking).filter(extract('month', Booking.start_datetime) == month, Booking.id_teacher == id_teacher).all()
     return booking
 
-#TODO: valutare se fare una query per ottenere il prezzo finale delle prentoazione mensili di un insegnante/studnete 
+#TODO: valutare se fare una query per ottenere il prezzo finale delle prentoazione mensili di un insegnante/studente 
+
+
+@router.get("/test")
+def test(db: Session = Depends(get_db)):
+    stud = db.query(Student).first()
+    print(stud.user)
+    
