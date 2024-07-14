@@ -4,12 +4,10 @@ from src.auth.models import User
 from src.v01.models import Booking, Teacher, Student, TeacherSchoolSubject, Subject, SchoolGrade
 from src.databases.db import get_db
 from src.default_logger import get_custom_logger
-from src.schemas.v01_schemas import BookingResponseSchema, BookingSchema
+from src.schemas.v01_schemas import BookingSchema
 from fastapi import HTTPException
-from sqlalchemy import extract  
-
-
-logger = get_custom_logger(__name__)
+from sqlalchemy import extract
+from src.config import settings
 
 
 router = APIRouter()
@@ -17,7 +15,7 @@ logger = get_custom_logger(__name__)
 
 @router.get("/")
 def healtcheck():
-    return {"status": "ok", "version": "0.1"}
+    return {"status": "ok", "version": settings.APP_VERSION}
 
 #accessibile solo da admin
 @router.get("/users/all")
@@ -146,42 +144,32 @@ def get_teacher_by_subject(id_subject: int, id_school_grade: int,db: Session = D
 
 #     return result
 
-# get all student's booking
-@router.get("/booking/all_student", response_model=list[BookingResponseSchema])
-def get_all_students_booking(db: Session = Depends(get_db)) -> list[BookingResponseSchema]:
+# get all students' booking
+@router.get("/booking/all_student", response_model=list[BookingSchema])
+def get_all_students_booking(db: Session = Depends(get_db)) -> list[BookingSchema]:
     # Query and join to get necessary data
-    students_bookings = db.query(Student, Booking).join(Booking, Student.id == Booking.id_student).all()
+    students_bookings = db.query(Booking).all()
 
-
-    # Prepare the response in a serializable format
-    result = []
-    for student, booking in students_bookings:
-        
-        result.append({
-            'student_data': student.user,
-            'booking_data': booking
-        })
-
-    return result
+    return students_bookings
 
 
 #accessibile da tutti
-@router.get("/booking/{id_booking}")
-def get_booking(id_booking: int, db: Session = Depends(get_db)):
+@router.get("/booking/{id_booking}", response_model=BookingSchema)
+def get_booking(id_booking: int, db: Session = Depends(get_db)) -> BookingSchema:
     book = db.query(Booking).filter(Booking.id_booking == id_booking).first()
     return book
 
 #tutte le prenotazioi di uno studente
-@router.get("/booking/student/{id_student}")
-def get_student_booking(id_student: int, db: Session = Depends(get_db)):
-    book = db.query(Booking).filter(Booking.id_student == id_student).all()
-    return book
+@router.get("/booking/student/{id_student}", response_model=list[BookingSchema])
+def get_student_booking(id_student: int, db: Session = Depends(get_db)) -> list[BookingSchema]:
+    books = db.query(Booking).filter(Booking.id_student == id_student).all()
+    return books
 
 #prenotazioni di un insegnante
-@router.get("/booking/teacher/{id_teacher}")
-def get_teacher_booking(id_teacher: int, db: Session = Depends(get_db)):
-    book = db.query(Booking).filter(Booking.id_teacher == id_teacher).first()
-    return book
+@router.get("/booking/teacher/{id_teacher}", response_model=list[BookingSchema])
+def get_teacher_booking(id_teacher: int, db: Session = Depends(get_db)) -> list[BookingSchema]:
+    bookings = db.query(Booking).filter(Booking.id_teacher == id_teacher).all()
+    return bookings
 
 #accessibile solo da admin e studente
 #inserimento di una prenotazione
@@ -217,14 +205,14 @@ def get_all_school_grade(db: Session = Depends(get_db)):
 
 
 #get booking by month per student
-@router.get("/booking/get_booking_by_month_per_student/{month}{id_student}")
+@router.get("/booking/get_booking_by_month_per_student/{month}/{id_student}")
 def get_booking_by_month_per_student(month: int, id_student: int, db: Session = Depends(get_db)):
     # Query and join to get necessary data
     booking = db.query(Booking).filter(extract('month', Booking.start_datetime) == month, Booking.id_student == id_student).all()
     return booking
 
 #get booking by month per teacher
-@router.get("/booking/get_booking_by_month_per_teacher/{month}{id_teacher}")
+@router.get("/booking/get_booking_by_month_per_teacher/{month}/{id_teacher}")
 def get_booking_by_month_per_teacher(month: int, id_teacher: int, db: Session = Depends(get_db)):
     # Query and join to get necessary data
     booking = db.query(Booking).filter(extract('month', Booking.start_datetime) == month, Booking.id_teacher == id_teacher).all()

@@ -64,6 +64,7 @@ class Settings(BaseSettings):
     # MISC
     DEBUG: bool = False
     TESTING: bool = False
+    APP_VERSION: str = None
 
     # allow_origins cannot be set to ['*'] for credentials to be allowed, origins must be specified.
     ORIGINS: List[str] = [

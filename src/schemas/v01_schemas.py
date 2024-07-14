@@ -1,17 +1,20 @@
 import datetime
 from pydantic import BaseModel
-import datetime
-from pydantic import BaseModel
+from typing import Optional
 
 class SchoolGrade(BaseModel):
     grade: str
     price: float
 
-class Student(BaseModel):
+class User(BaseModel):
     id: int
     name: str
     surname: str
     username: str
+
+class Student(BaseModel):
+    id: int
+    user: User
 
 class Teacher(BaseModel):
     id: int
@@ -20,7 +23,8 @@ class Subject(BaseModel):
     name: str
 
 class BookingSchema(BaseModel):
-    teacher: Teacher
+    teacher: Optional[Teacher]
+    student: Optional[Student]
     subject: Subject
     school_grade: SchoolGrade
     start_datetime: datetime.datetime
@@ -31,7 +35,3 @@ class BookingSchema(BaseModel):
     insert_id_user: int
     insert_date: datetime.date
     insert_time: datetime.time
-
-class BookingResponseSchema(BaseModel):
-    student_data: Student
-    booking_data: BookingSchema
