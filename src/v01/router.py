@@ -1,13 +1,15 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from src.auth.models import User
-from src.v01.models import Booking, Teacher, Student, TeacherSchoolSubject, Subject, SchoolGrade
+from src.v01.models import Booking, Teacher, Student, TeacherSchoolSubject, Subject, SchoolGrade, BookingTask
 from src.databases.db import get_db
 from src.default_logger import get_custom_logger
 from src.schemas.v01_schemas import BookingSchema
 from fastapi import HTTPException
 from sqlalchemy import extract
 from src.config import settings
+import datetime
+from dailyscheduler.classes import WorkingDay
 
 
 router = APIRouter()
@@ -221,8 +223,27 @@ def get_booking_by_month_per_teacher(month: int, id_teacher: int, db: Session = 
 #TODO: valutare se fare una query per ottenere il prezzo finale delle prentoazione mensili di un insegnante/studente 
 
 
+
 @router.get("/test")
 def test(db: Session = Depends(get_db)):
-    stud = db.query(Student).first()
-    print(stud.user)
-    
+
+    day = WorkingDay(start=9, end=19, slot_duration=30)
+
+    book=db.query(Booking).all()
+
+    try:
+        for b in book:
+            bookingTask = BookingTask(b)
+            day.book_task(bookingTask)
+        
+        book = book[0]
+        book.id_booking = 45
+        bookingTask = BookingTask(book)
+        day.book_task(bookingTask)
+
+    except Exception as e:
+        raise HTTPException(status_code=409, detail=str(e))
+
+    day.debug()
+
+    return True
