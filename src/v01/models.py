@@ -105,3 +105,20 @@ class BookingTask(Task):
 
     def __str__(self):
         return f'{self.id_booking} - {self.start_datetime} - {self.end_datetime} - {self.duration} - {self.notes} - {self.attended} - {self.insert_id_user} - {self.insert_date} - {self.insert_time}'
+
+    def to_booking(self) -> Booking:
+        return Booking(
+            id_booking=self.id_booking,
+            id_student=self.id_student,
+            id_teacher=self.id_teacher,
+            id_school_grade=self.id_school_grade,
+            id_subject=self.id_subject,
+            start_datetime=self.start_datetime,
+            end_datetime=self.end_datetime,
+            duration=self.duration,
+            notes=self.notes,
+            attended=self.attended,
+            insert_id_user=self.insert_id_user,
+            insert_date=self.insert_date,
+            insert_time=self.insert_time
+        )
