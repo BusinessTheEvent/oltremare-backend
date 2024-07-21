@@ -103,11 +103,6 @@ INSERT INTO public.user_group (user_id, group_id) VALUES
 -- (6, 2, 2, 3, '2023-02-01 14:00:00+00', '2023-02-01 15:00:00+00', 60, 'Third meeting', true, 2, '2023-02-01', '14:00:00'),
 -- (7, 3, 3, 4, '2023-02-02 16:00:00+00', '2023-02-02 17:00:00+00', 60, 'Fourth meeting', false, 3, '2023-02-02', '16:00:00');
 
-INSERT INTO public.booking
-(id_booking, id_student, id_teacher, id_school_grade, start_datetime, end_datetime, duration, id_subject, notes, attended, insert_id_user, insert_date, insert_time)
-VALUES(1, 4, 1, 2, '2024-07-20 09:00:00', '2024-07-20 10:00:00', 1, 1, 'note', true,  1, '2024-07-18', '23:39:00');
-INSERT INTO booking_slot (id_booking, id_slot) VALUES(1, 1);
-INSERT INTO booking_slot (id_booking, id_slot) VALUES(1, 2);
 
 -- Inserimento dati nella tabella anag_slot
 INSERT INTO public.anag_slot (id_slot) VALUES 
@@ -135,6 +130,11 @@ INSERT INTO public.anag_slot (id_slot) VALUES
 
 
 
+INSERT INTO public.booking
+(id_booking, id_student, id_teacher, id_school_grade, start_datetime, end_datetime, duration, id_subject, notes, attended, insert_id_user, insert_date, insert_time)
+VALUES(1, 4, 1, 2, '2024-07-20 09:00:00', '2024-07-20 10:00:00', 1, 1, 'note', true,  1, '2024-07-18', '23:39:00');
+INSERT INTO booking_slot (id_booking, id_slot) VALUES(1, 1);
+INSERT INTO booking_slot (id_booking, id_slot) VALUES(1, 2);
 
 INSERT INTO public.booking
 (id_booking, id_student, id_teacher, id_school_grade, start_datetime, end_datetime, duration, id_subject, notes, attended, insert_id_user, insert_date, insert_time)
