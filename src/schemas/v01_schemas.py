@@ -35,3 +35,16 @@ class BookingSchema(BaseModel):
     insert_id_user: int
     insert_date: datetime.date
     insert_time: datetime.time
+
+class CreateBookingSchema(BaseModel):
+    id_teacher: int
+    id_student: int
+    id_subject: int
+    id_school_grade: int
+    start_datetime: datetime.datetime
+    end_datetime: datetime.datetime
+    notes: str
+    attended: bool
+    insert_id_user: int
+    insert_date: datetime.date
+    insert_time: datetime.time

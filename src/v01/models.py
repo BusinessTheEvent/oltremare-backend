@@ -1,9 +1,13 @@
 from sqlalchemy import Column, Integer, String, Boolean, Numeric, ForeignKey, DateTime, Date, Time
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from src.auth.models import User
 from src.databases.db import Base
-from dailyscheduler.abstract_classes import Task
+from sqlalchemy import Table
+
+booking_anag_slot = Table('booking_slot', Base.metadata,
+    Column('id_booking', Integer, ForeignKey('booking.id_booking'), primary_key=True),
+    Column('id_slot', Integer, ForeignKey('anag_slot.id_slot'), primary_key=True)
+)
 
 class SchoolGrade(Base):
     __tablename__ = 'school_grade'
@@ -57,6 +61,7 @@ class Booking(Base):
     school_grade = relationship('SchoolGrade', back_populates='bookings')
     teacher = relationship('Teacher', back_populates='bookings')
     subject = relationship('Subject', back_populates='bookings')
+    slots = relationship('AnagSlot', secondary=booking_anag_slot)
 
 
 
@@ -71,54 +76,60 @@ class Chief(Base):
     id = Column(Integer, ForeignKey('users.id'), primary_key=True)
 
 
-class BookingTask(Task):
-    id_booking: int
-    id_student: int
-    id_teacher: int
-    id_school_grade: int
-    id_subject: int
-    start_datetime: DateTime
-    end_datetime: DateTime
-    duration: int
-    notes: str
-    attended: bool
-    insert_id_user: int
-    insert_date: Date
-    insert_time: Time
+# class BookingTask(Task):
+#     id_booking: int
+#     id_student: int
+#     id_teacher: int
+#     id_school_grade: int
+#     id_subject: int
+#     start_datetime: DateTime
+#     end_datetime: DateTime
+#     duration: int
+#     notes: str
+#     attended: bool
+#     insert_id_user: int
+#     insert_date: Date
+#     insert_time: Time
 
-    def __init__(self, booking: Booking):
-        super().__init__(id=booking.id_booking, from_hour=booking.start_datetime.time(), to_hour=booking.end_datetime.time())
+#     def __init__(self, booking: Booking):
+#         super().__init__(id=booking.id_booking, from_hour=booking.start_datetime.time(), to_hour=booking.end_datetime.time())
 
-        self.id_booking = booking.id_booking
-        self.id_student = booking.id_student
-        self.id_teacher = booking.id_teacher
-        self.id_school_grade = booking.id_school_grade
-        self.id_subject = booking.id_subject
-        self.start_datetime = booking.start_datetime
-        self.end_datetime = booking.end_datetime
-        self.duration = booking.duration
-        self.notes = booking.notes
-        self.attended = booking.attended
-        self.insert_id_user = booking.insert_id_user
-        self.insert_date = booking.insert_date
-        self.insert_time = booking.insert_time
+#         self.id_booking = booking.id_booking
+#         self.id_student = booking.id_student
+#         self.id_teacher = booking.id_teacher
+#         self.id_school_grade = booking.id_school_grade
+#         self.id_subject = booking.id_subject
+#         self.start_datetime = booking.start_datetime
+#         self.end_datetime = booking.end_datetime
+#         self.duration = booking.duration
+#         self.notes = booking.notes
+#         self.attended = booking.attended
+#         self.insert_id_user = booking.insert_id_user
+#         self.insert_date = booking.insert_date
+#         self.insert_time = booking.insert_time
 
-    def __str__(self):
-        return f'{self.id_booking} - {self.start_datetime} - {self.end_datetime} - {self.duration} - {self.notes} - {self.attended} - {self.insert_id_user} - {self.insert_date} - {self.insert_time}'
+#     def __str__(self):
+#         return f'{self.id_booking} - {self.start_datetime} - {self.end_datetime} - {self.duration} - {self.notes} - {self.attended} - {self.insert_id_user} - {self.insert_date} - {self.insert_time}'
 
-    def to_booking(self) -> Booking:
-        return Booking(
-            id_booking=self.id_booking,
-            id_student=self.id_student,
-            id_teacher=self.id_teacher,
-            id_school_grade=self.id_school_grade,
-            id_subject=self.id_subject,
-            start_datetime=self.start_datetime,
-            end_datetime=self.end_datetime,
-            duration=self.duration,
-            notes=self.notes,
-            attended=self.attended,
-            insert_id_user=self.insert_id_user,
-            insert_date=self.insert_date,
-            insert_time=self.insert_time
-        )
+#     def to_booking(self) -> Booking:
+#         return Booking(
+#             id_booking=self.id_booking,
+#             id_student=self.id_student,
+#             id_teacher=self.id_teacher,
+#             id_school_grade=self.id_school_grade,
+#             id_subject=self.id_subject,
+#             start_datetime=self.start_datetime,
+#             end_datetime=self.end_datetime,
+#             duration=self.duration,
+#             notes=self.notes,
+#             attended=self.attended,
+#             insert_id_user=self.insert_id_user,
+#             insert_date=self.insert_date,
+#             insert_time=self.insert_time
+#         )
+
+class AnagSlot(Base):
+    __tablename__ = 'anag_slot'
+    id_slot = Column(Integer, primary_key=True)
+
+    bookings = relationship('Booking', secondary=booking_anag_slot, back_populates='slots')

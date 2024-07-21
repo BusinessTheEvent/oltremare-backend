@@ -1,16 +1,20 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from src.auth.models import User
-from src.v01.models import Booking, Teacher, Student, TeacherSchoolSubject, Subject, SchoolGrade, BookingTask
+from src.v01.models import Booking, Teacher, TeacherSchoolSubject, Subject, SchoolGrade, AnagSlot
 from src.databases.db import get_db
 from src.default_logger import get_custom_logger
-from src.schemas.v01_schemas import BookingSchema
+from src.schemas.v01_schemas import CreateBookingSchema, BookingSchema
 from fastapi import HTTPException
 from sqlalchemy import extract
 from src.config import settings
 import datetime
 from dailyscheduler.classes import WorkingDay
 
+START_HOUR = 9
+END_HOUR = 18
+SLOT_DURATION = 30
+SLOTS_IN_HOUR = 60 // SLOT_DURATION
 
 router = APIRouter()
 logger = get_custom_logger(__name__)
@@ -36,41 +40,6 @@ def get_user(user_id: int, db: Session = Depends(get_db)):
 def get_all_booking(db: Session = Depends(get_db)):
     booking = db.query(Booking).all()
     return booking
-
-#get all teacher
-@router.get("/booking/all_teacher")
-def get_all_teacher(db: Session = Depends(get_db)):
-    # Query and join to get necessary data
-    teachers_bookings = db.query(Teacher, Booking).join(Booking, Teacher.id == Booking.id_teacher).all()
-
-    # Prepare the response in a serializable format
-    result = []
-    for teacher, booking in teachers_bookings:
-        teacher_data = {
-            'id': teacher.id,
-            # Include other attributes of Teacher model if needed
-        }
-        booking_data = {
-            'id_booking': booking.id_booking,
-            'id_student': booking.id_student,
-            'id_teacher': booking.id_teacher,
-            'id_school_grade': booking.id_school_grade,
-            'id_subject': booking.id_subject,
-            'start_datetime': booking.start_datetime,
-            'end_datetime': booking.end_datetime,
-            'duration': booking.duration,
-            'notes': booking.notes,
-            'attended': booking.attended,
-            'insert_id_user': booking.insert_id_user,
-            'insert_date': booking.insert_date,
-            'insert_time': booking.insert_time
-        }
-        result.append({
-            'teacher': teacher_data,
-            'booking': booking_data
-        })
-
-    return result
 
 #get teacher group by subject
 @router.get("/booking/get_teacher_by_school_and_subject/{id_school_grade}/{id_subject}")
@@ -107,44 +76,6 @@ def get_teacher_by_subject(id_subject: int, id_school_grade: int,db: Session = D
         })
 
     return result
-# SELECT teacher.id AS teacher_id, teacher_school_subject.id AS teacher_school_subject_id, teacher_school_subject.id_school_grade AS teacher_school_subject_id_school_grade, teacher_school_subject.id_subject AS teacher_school_subject_id_subject, subjects.id_subject AS subjeccts_id_subject, subjects.name AS subjects_name
-# FROM teacher_school_subject JOIN teacher ON teacher.id = teacher_school_subject.id JOIN teacher_school_subject ON subjects.id_subject = teacher_school_subject.id_subject, subjects
-# WHERE subjects.id_subject = 1 AND teacher_school_subject.id_school_grade = 1
-
-#get all teacher group by subject
-# @router.get("/booking/all_teacher_by_subject")
-# def get_all_booking(db: Session = Depends(get_db)):
-#     # Query and join to get necessary data
-#     teacher_by_subject = db.query(User,Teacher).join(Teacher, User.id == Teacher.id).all()
-
-#     # Prepare the response in a serializable format
-#     result = []
-#     for student, booking in teacher_by_subject:
-#         students_data = {
-#             'id': student.id,
-#             # Include other attributes of Teacher model if needed
-#         }
-#         booking_data = {
-#             'id_booking': booking.id_booking,
-#             'id_student': booking.id_student,
-#             'id_teacher': booking.id_teacher,
-#             'id_school_grade': booking.id_school_grade,
-#             'id_subject': booking.id_subject,
-#             'start_datetime': booking.start_datetime,
-#             'end_datetime': booking.end_datetime,
-#             'duration': booking.duration,
-#             'notes': booking.notes,
-#             'attended': booking.attended,
-#             'insert_id_user': booking.insert_id_user,
-#             'insert_date': booking.insert_date,
-#             'insert_time': booking.insert_time
-#         }
-#         result.append({
-#             'student': students_data,
-#             'booking': booking_data
-#         })
-
-#     return result
 
 # get all students' booking
 @router.get("/booking/all_student", response_model=list[BookingSchema])
@@ -153,7 +84,6 @@ def get_all_students_booking(db: Session = Depends(get_db)) -> list[BookingSchem
     students_bookings = db.query(Booking).all()
 
     return students_bookings
-
 
 #accessibile da tutti
 @router.get("/booking/{id_booking}", response_model=BookingSchema)
@@ -176,12 +106,26 @@ def get_teacher_booking(id_teacher: int, db: Session = Depends(get_db)) -> list[
 #accessibile solo da admin e studente
 #inserimento di una prenotazione
 @router.put("/booking/insert")
-def create_booking(booking_new: BookingSchema, db: Session = Depends(get_db)):    
-    new_booking = Booking(**booking_new.model_dump())
+def create_booking(booking_new: CreateBookingSchema, db: Session = Depends(get_db)):    
+    ## TODO: add secutiry checks
+    ## TODO: make utility function to execute complex query safely
+    
+    slots = db.query(AnagSlot).all()
+
+    duration = (booking_new.end_datetime - booking_new.start_datetime).min
+
+    new_booking = Booking(**booking_new.model_dump(), duration=duration)
+
+    start_index = ((new_booking.start_datetime.hour - START_HOUR) * SLOTS_IN_HOUR + new_booking.start_datetime.minute // SLOT_DURATION) + 1
+    end_index = ((new_booking.end_datetime.hour - START_HOUR) * SLOTS_IN_HOUR + new_booking.end_datetime.minute // SLOT_DURATION) + 1
+
+    for slot in slots:
+        if slot.id_slot >= start_index and slot.id_slot <= end_index:
+            new_booking.slots.append(slot)
+    
     db.add(new_booking)
     db.commit()
-    return HTTPException(status_code=200, detail="Ticket type created successfully")
-
+    return HTTPException(status_code=200, detail="Booking created successfully")
 
 #accessibile solo da admin e insegnante
 #rimozione di una prenotazione
@@ -189,6 +133,10 @@ def create_booking(booking_new: BookingSchema, db: Session = Depends(get_db)):
 def delete_booking(id_booking: int, db: Session = Depends(get_db)):
     booking = db.query(Booking).filter(Booking.id_booking == id_booking).first()
     db.delete(booking)
+
+
+
+    ## TODO: implement on cascade?
     db.commit()
     return HTTPException(status_code=200, detail="Booking deleted successfully")
 
@@ -226,24 +174,5 @@ def get_booking_by_month_per_teacher(month: int, id_teacher: int, db: Session = 
 
 @router.get("/test")
 def test(db: Session = Depends(get_db)):
-
-    day = WorkingDay(start=9, end=19, slot_duration=30)
-
-    book=db.query(Booking).all()
-
-    try:
-        for b in book:
-            bookingTask = BookingTask(b)
-            day.book_task(bookingTask)
-        
-        book = book[0]
-        book.id_booking = 45
-        bookingTask = BookingTask(book)
-        day.book_task(bookingTask)
-
-    except Exception as e:
-        raise HTTPException(status_code=409, detail=str(e))
-
-    day.debug()
 
     return True

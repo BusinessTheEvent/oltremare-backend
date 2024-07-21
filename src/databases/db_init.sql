@@ -57,6 +57,17 @@ CREATE TABLE IF NOT EXISTS "chief" (
 	PRIMARY KEY ("id")
 );
 
+CREATE TABLE IF NOT EXISTS "anag_slot" (
+	"id_slot" int NOT NULL, 
+	PRIMARY KEY ("id_slot")
+);
+
+CREATE TABLE IF NOT EXISTS "booking_slot" (
+	"id_booking" int NOT NULL, 
+	"id_slot"    int NOT NULL,
+	PRIMARY KEY ("id_booking", "id_slot")
+);
+
 
 
 ALTER TABLE "student" ADD CONSTRAINT "student_fk0" FOREIGN KEY ("id") REFERENCES "users"("id");

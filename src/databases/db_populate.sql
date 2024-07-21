@@ -96,9 +96,80 @@ INSERT INTO public.user_group (user_id, group_id) VALUES
 (8, 4); -- George Miller in Group 4
 
 -- Inserimento dati nella tabella booking
-INSERT INTO public.booking (id_student, id_teacher, id_school_grade, id_subject, start_datetime, end_datetime, duration, notes, attended, insert_id_user, insert_date, insert_time)
-VALUES 
-(4, 1, 1, 1, '2023-01-01 09:00:00+00', '2023-01-01 10:00:00+00', 60, 'First meeting', true, 1, '2023-01-01', '09:00:00'),
-(5, 1, 1, 2, '2023-01-02 11:00:00+00', '2023-01-02 12:00:00+00', 60, 'Second meeting', false, 1, '2023-01-02', '11:00:00'),
-(6, 2, 2, 3, '2023-02-01 14:00:00+00', '2023-02-01 15:00:00+00', 60, 'Third meeting', true, 2, '2023-02-01', '14:00:00'),
-(7, 3, 3, 4, '2023-02-02 16:00:00+00', '2023-02-02 17:00:00+00', 60, 'Fourth meeting', false, 3, '2023-02-02', '16:00:00');
+-- INSERT INTO public.booking (id_student, id_teacher, id_school_grade, id_subject, start_datetime, end_datetime, duration, notes, attended, insert_id_user, insert_date, insert_time)
+-- VALUES 
+-- (4, 1, 1, 1, '2023-01-01 09:00:00+00', '2023-01-01 10:00:00+00', 60, 'First meeting', true, 1, '2023-01-01', '09:00:00'),
+-- (5, 1, 1, 2, '2023-01-02 11:00:00+00', '2023-01-02 12:00:00+00', 60, 'Second meeting', false, 1, '2023-01-02', '11:00:00'),
+-- (6, 2, 2, 3, '2023-02-01 14:00:00+00', '2023-02-01 15:00:00+00', 60, 'Third meeting', true, 2, '2023-02-01', '14:00:00'),
+-- (7, 3, 3, 4, '2023-02-02 16:00:00+00', '2023-02-02 17:00:00+00', 60, 'Fourth meeting', false, 3, '2023-02-02', '16:00:00');
+
+INSERT INTO public.booking
+(id_booking, id_student, id_teacher, id_school_grade, start_datetime, end_datetime, duration, id_subject, notes, attended, insert_id_user, insert_date, insert_time)
+VALUES(1, 4, 1, 2, '2024-07-20 09:00:00', '2024-07-20 10:00:00', 1, 1, 'note', true,  1, '2024-07-18', '23:39:00');
+INSERT INTO booking_slot (id_booking, id_slot) VALUES(1, 1);
+INSERT INTO booking_slot (id_booking, id_slot) VALUES(1, 2);
+
+-- Inserimento dati nella tabella anag_slot
+INSERT INTO public.anag_slot (id_slot) VALUES 
+(1),
+(2),
+(3),
+(4),
+(5),
+(6),
+(7),
+(8),
+(9),
+(10),
+(11),
+(12),
+(13),
+(14),
+(15),
+(16),
+(17),
+(18),
+(19),
+(20);
+
+
+
+
+
+INSERT INTO public.booking
+(id_booking, id_student, id_teacher, id_school_grade, start_datetime, end_datetime, duration, id_subject, notes, attended, insert_id_user, insert_date, insert_time)
+VALUES(2, 5, 1,  2, '2024-07-20 10:00:00', '2024-07-20 11:00:00', 1, 1, 'note',false, 1, '2024-07-18', '23:39:00');
+INSERT INTO booking_slot (id_booking, id_slot) VALUES(2, 3);
+INSERT INTO booking_slot (id_booking, id_slot) VALUES(2, 4);
+
+INSERT INTO public.booking
+(id_booking, id_student, id_teacher, id_school_grade, start_datetime, end_datetime, duration, id_subject, notes, attended, insert_id_user, insert_date, insert_time)
+VALUES(3, 6, 2, 1, '2024-07-20 10:30:00', '2024-07-20 12:00:00', 2, 1, 'note', true, 1, '2024-07-18', '23:39:00');
+INSERT INTO booking_slot (id_booking, id_slot) VALUES(3, 4);
+INSERT INTO booking_slot (id_booking, id_slot) VALUES(3, 5);
+INSERT INTO booking_slot (id_booking, id_slot) VALUES(3, 6);
+
+INSERT INTO public.booking
+(id_booking, id_student, id_teacher, id_school_grade, start_datetime, end_datetime, duration, id_subject, notes, attended, insert_id_user, insert_date, insert_time)
+VALUES(4, 7, 2, 3, '2024-07-20 12:00:00', '2024-07-20 13:30:00', 2, 1, 'note', true, 1, '2024-07-18', '23:39:00');
+INSERT INTO booking_slot (id_booking, id_slot) VALUES(4, 7);
+INSERT INTO booking_slot (id_booking, id_slot) VALUES(4, 8);
+INSERT INTO booking_slot (id_booking, id_slot) VALUES(4, 9);
+
+INSERT INTO public.booking
+(id_booking, id_student, id_teacher, id_school_grade, start_datetime, end_datetime, duration, id_subject, notes, attended, insert_id_user, insert_date, insert_time)
+VALUES(5, 5, 2,  2, '2024-07-20 13:30:00', '2024-07-20 14:30:00', 3, 1, 'note', true, 1, '2024-07-18', '23:39:00');
+INSERT INTO booking_slot (id_booking, id_slot) VALUES(5, 10);
+INSERT INTO booking_slot (id_booking, id_slot) VALUES(5, 11);
+
+INSERT INTO public.booking
+(id_booking, id_student, id_teacher, id_school_grade, start_datetime, end_datetime, duration, id_subject, notes, attended, insert_id_user, insert_date, insert_time)
+VALUES(6, 6, 3, 1, '2024-07-20 09:00:00', '2024-07-20 10:00:00', 1, 1, 'note', false, 1, '2024-07-18', '23:39:00');
+INSERT INTO booking_slot (id_booking, id_slot) VALUES(6, 1);
+INSERT INTO booking_slot (id_booking, id_slot) VALUES(6, 2);
+
+INSERT INTO public.booking
+(id_booking, id_student, id_teacher, id_school_grade, start_datetime, end_datetime, duration, id_subject, notes, attended, insert_id_user, insert_date, insert_time)
+VALUES(7, 6, 3, 3, '2024-07-20 13:00:00', '2024-07-20 14:00:00', 1, 1, 'note', false, 1, '2024-07-18', '23:39:00');
+INSERT INTO booking_slot (id_booking, id_slot) VALUES(7, 9);
+INSERT INTO booking_slot (id_booking, id_slot) VALUES(7, 10);
