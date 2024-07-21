@@ -6,10 +6,16 @@ from src.databases.db import get_db
 from src.default_logger import get_custom_logger
 from src.schemas.v01_schemas import CreateBookingSchema, BookingSchema
 from fastapi import HTTPException
-from sqlalchemy import extract
+from sqlalchemy import extract, text
 from src.config import settings
 import datetime
 from dailyscheduler.classes import WorkingDay
+from src.v01 import utils
+from sqlalchemy.exc import IntegrityError
+
+from src.default_logger import get_custom_logger
+
+logger = get_custom_logger(__name__)
 
 START_HOUR = 9
 END_HOUR = 18
@@ -109,22 +115,42 @@ def get_teacher_booking(id_teacher: int, db: Session = Depends(get_db)) -> list[
 def create_booking(booking_new: CreateBookingSchema, db: Session = Depends(get_db)):    
     ## TODO: add secutiry checks
     ## TODO: make utility function to execute complex query safely
-    
+
+    ## availability check
+    available = utils.check_lesson_availability(booking_new, db)
+    print(available)
+    if not available:
+        raise HTTPException(status_code=400, detail="Teacher not available in the selected time slot")
+
     slots = db.query(AnagSlot).all()
 
-    duration = (booking_new.end_datetime - booking_new.start_datetime).min
+    try:
+        duration = (booking_new.end_datetime - booking_new.start_datetime).seconds // 60
+        datetime.timedelta
 
-    new_booking = Booking(**booking_new.model_dump(), duration=duration)
+        new_booking = Booking(**booking_new.model_dump(), duration=duration)
 
-    start_index = ((new_booking.start_datetime.hour - START_HOUR) * SLOTS_IN_HOUR + new_booking.start_datetime.minute // SLOT_DURATION) + 1
-    end_index = ((new_booking.end_datetime.hour - START_HOUR) * SLOTS_IN_HOUR + new_booking.end_datetime.minute // SLOT_DURATION) + 1
+        start_index = utils.hour_to_index(booking_new.start_datetime) 
+        end_index = utils.hour_to_index(booking_new.end_datetime) 
 
-    for slot in slots:
-        if slot.id_slot >= start_index and slot.id_slot <= end_index:
-            new_booking.slots.append(slot)
-    
-    db.add(new_booking)
-    db.commit()
+        for slot in slots:
+            if slot.id_slot >= start_index and slot.id_slot <= end_index:
+                new_booking.slots.append(slot)
+        
+        db.add(new_booking)
+
+        available = utils.check_lesson_availability(booking_new, db)
+        print(available)
+        if not available:
+            raise HTTPException(status_code=400, detail="Teacher not available in the selected time slot")
+
+        db.commit()
+
+    except IntegrityError as e:
+        db.rollback()
+        logger.error(f"Error inserting booking: {e}")
+        raise HTTPException(status_code=400, detail="Booking already exists")
+
     return HTTPException(status_code=200, detail="Booking created successfully")
 
 #accessibile solo da admin e insegnante
@@ -169,8 +195,6 @@ def get_booking_by_month_per_teacher(month: int, id_teacher: int, db: Session = 
     return booking
 
 #TODO: valutare se fare una query per ottenere il prezzo finale delle prentoazione mensili di un insegnante/studente 
-
-
 
 @router.get("/test")
 def test(db: Session = Depends(get_db)):
