@@ -118,8 +118,8 @@ def create_booking(booking_new: CreateBookingSchema, db: Session = Depends(get_d
 
     ## availability check
     available = utils.check_lesson_availability(booking_new, db)
-    print(available)
-    if not available:
+    
+    if available == False:
         raise HTTPException(status_code=400, detail="Teacher not available in the selected time slot")
 
     slots = db.query(AnagSlot).all()
@@ -140,7 +140,7 @@ def create_booking(booking_new: CreateBookingSchema, db: Session = Depends(get_d
         db.add(new_booking)
 
         available = utils.check_lesson_availability(booking_new, db)
-        print(available)
+        
         if not available:
             raise HTTPException(status_code=400, detail="Teacher not available in the selected time slot")
 
