@@ -4,7 +4,7 @@ from src.auth.models import User
 from src.v01.models import Booking, Teacher, TeacherSchoolSubject, Subject, SchoolGrade, AnagSlot
 from src.databases.db import get_db
 from src.default_logger import get_custom_logger
-from src.schemas.v01_schemas import CreateBookingSchema, BookingSchema
+from src.schemas.v01_schemas import CreateBookingSchema, BookingSchema, FullCalendarBookingSchema
 from fastapi import HTTPException
 from sqlalchemy import extract, text
 from src.config import settings
@@ -153,14 +153,35 @@ def create_booking(booking_new: CreateBookingSchema, db: Session = Depends(get_d
 
     return HTTPException(status_code=200, detail="Booking created successfully")
 
+@router.patch("/booking/update/{id_booking}")
+def update_booking(id_booking: int, booking: CreateBookingSchema, db: Session = Depends(get_db)):
+
+    raise HTTPException(status_code=400, detail="Available with Pro Version")
+
+    booking = db.query(Booking).filter(Booking.id_booking == id_booking).first()
+
+    if booking is None:
+        raise HTTPException(status_code=404, detail="Booking not found")
+    
+    booking.start_datetime = booking.start_datetime
+    booking.end_datetime = booking.end_datetime
+    booking.duration = (booking.end_datetime - booking.end_datetime).seconds // 60
+    booking.id_student = booking.id_student
+    booking.id_teacher = booking.id_teacher
+    booking.id_subject = booking.id_subject
+    booking.id_school_grade = booking.id_school_grade
+    booking.notes = booking.notes
+    booking.attended = booking.attended
+
+    db.add(booking)
+    db.commit()
+
 #accessibile solo da admin e insegnante
 #rimozione di una prenotazione
 @router.delete("/booking/{id_booking}")
 def delete_booking(id_booking: int, db: Session = Depends(get_db)):
     booking = db.query(Booking).filter(Booking.id_booking == id_booking).first()
     db.delete(booking)
-
-
 
     ## TODO: implement on cascade?
     db.commit()
@@ -193,6 +214,24 @@ def get_booking_by_month_per_teacher(month: int, id_teacher: int, db: Session = 
     # Query and join to get necessary data
     booking = db.query(Booking).filter(extract('month', Booking.start_datetime) == month, Booking.id_teacher == id_teacher).all()
     return booking
+
+#get booking by user in fullCalendar format
+@router.post("/booking/get_booking_by_user/fullCalendar", response_model=list[FullCalendarBookingSchema])
+def get_bookings_by_user_fullCalendar(id_user: int, db: Session = Depends(get_db)) -> list[FullCalendarBookingSchema]:
+
+    bookings = db.query(Booking).filter(Booking.id_student == id_user or Booking.id_teacher == id_user ).all()
+
+    result = []
+    for booking in bookings:
+        event = {
+            "start": booking.start_datetime.strftime("%Y-%m-%dT%H:%M:%S"),
+            "end": booking.end_datetime.strftime("%Y-%m-%dT%H:%M:%S"),
+            "title": booking.name,
+            "allDay": False
+        }
+        result.append(event)
+        
+    return result
 
 #TODO: valutare se fare una query per ottenere il prezzo finale delle prentoazione mensili di un insegnante/studente 
 

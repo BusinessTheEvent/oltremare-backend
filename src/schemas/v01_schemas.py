@@ -43,8 +43,14 @@ class CreateBookingSchema(BaseModel):
     id_school_grade: int
     start_datetime: datetime.datetime
     end_datetime: datetime.datetime
-    notes: str
+    notes: Optional[str]
     attended: bool
     insert_id_user: int
     insert_date: datetime.date
     insert_time: datetime.time
+
+class FullCalendarBookingSchema(BaseModel):
+    title: str
+    start: datetime.datetime
+    end: datetime.datetime
+    allDay: bool

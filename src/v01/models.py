@@ -63,6 +63,10 @@ class Booking(Base):
     subject = relationship('Subject', back_populates='bookings')
     slots = relationship('AnagSlot', secondary=booking_anag_slot)
 
+    @property
+    def name(self):
+        return f"Lezione di {self.subject.name}"
+
 
 
 class TeacherSchoolSubject(Base):
