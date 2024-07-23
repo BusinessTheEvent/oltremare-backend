@@ -4,7 +4,7 @@ from src.auth.models import User
 from src.v01.models import Booking, Teacher, TeacherSchoolSubject, Subject, SchoolGrade, AnagSlot
 from src.databases.db import get_db
 from src.default_logger import get_custom_logger
-from src.schemas.v01_schemas import CreateBookingSchema, BookingSchema, FullCalendarBookingSchema
+from src.schemas.v01_schemas import CreateBookingSchema, BookingSchema, FullCalendarBookingSchema, IdSchema
 from fastapi import HTTPException
 from sqlalchemy import extract, text
 from src.config import settings
@@ -217,13 +217,14 @@ def get_booking_by_month_per_teacher(month: int, id_teacher: int, db: Session = 
 
 #get booking by user in fullCalendar format
 @router.post("/booking/get_booking_by_user/fullCalendar", response_model=list[FullCalendarBookingSchema])
-def get_bookings_by_user_fullCalendar(id_user: int, db: Session = Depends(get_db)) -> list[FullCalendarBookingSchema]:
+def get_bookings_by_user_fullCalendar(id_user: IdSchema, db: Session = Depends(get_db)) -> list[FullCalendarBookingSchema]:
 
-    bookings = db.query(Booking).filter(Booking.id_student == id_user or Booking.id_teacher == id_user ).all()
+    bookings = db.query(Booking).filter(Booking.id_student == id_user.id or Booking.id_teacher == id_user.id ).all()
 
     result = []
     for booking in bookings:
         event = {
+            "id_booking": booking.id_booking,
             "start": booking.start_datetime.strftime("%Y-%m-%dT%H:%M:%S"),
             "end": booking.end_datetime.strftime("%Y-%m-%dT%H:%M:%S"),
             "title": booking.name,

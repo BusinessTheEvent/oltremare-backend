@@ -2,6 +2,9 @@ import datetime
 from pydantic import BaseModel
 from typing import Optional
 
+class IdSchema(BaseModel):
+    id: int
+
 class SchoolGrade(BaseModel):
     grade: str
     price: float
@@ -50,6 +53,7 @@ class CreateBookingSchema(BaseModel):
     insert_time: datetime.time
 
 class FullCalendarBookingSchema(BaseModel):
+    id_booking: int
     title: str
     start: datetime.datetime
     end: datetime.datetime
