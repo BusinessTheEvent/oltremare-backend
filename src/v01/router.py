@@ -1,15 +1,14 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from src.auth.models import User
-from src.v01.models import Booking, Teacher, TeacherSchoolSubject, Subject, SchoolGrade, AnagSlot
+from src.v01.models import Booking, Teacher, TeacherSchoolSubject, Subject, SchoolGrade, AnagSlot, Student
 from src.databases.db import get_db
 from src.default_logger import get_custom_logger
-from src.schemas.v01_schemas import CreateBookingSchema, BookingSchema, FullCalendarBookingSchema, IdSchema
+from src.schemas.v01_schemas import CreateBookingSchema, BookingSchema, FullCalendarBookingSchema, IdSchema, StudentInfoResponse, TeacherInfoResponse
 from fastapi import HTTPException
-from sqlalchemy import extract, text
+from sqlalchemy import extract
 from src.config import settings
 import datetime
-from dailyscheduler.classes import WorkingDay
 from src.v01 import utils
 from sqlalchemy.exc import IntegrityError
 
@@ -30,9 +29,16 @@ def healtcheck():
     return {"status": "ok", "version": settings.APP_VERSION}
 
 #accessibile solo da admin
-@router.get("/users/all")
-def get_users(db: Session = Depends(get_db)):
-    users = db.query(User).all()
+@router.get("/students/all", response_model=list[StudentInfoResponse])
+def get_all_users(db: Session = Depends(get_db))->list[StudentInfoResponse]:
+    users = db.query(Student).all()
+    return users
+
+#accessibile solo da admin
+@router.get("/teachers/all", response_model=list[TeacherInfoResponse])
+def get_all_users(db: Session = Depends(get_db))->list[TeacherInfoResponse]:
+    users = db.query(Teacher).all()
+    print(users)
     return users
 
 #accessibile solo da admin e insegnante (per gli studenti)

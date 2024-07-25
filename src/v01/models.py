@@ -25,6 +25,7 @@ class Student(Base):
 
     bookings = relationship('Booking')
     user = relationship('User')
+    school_grade = relationship('SchoolGrade', lazy='joined')
 
 class Teacher(Base):
     __tablename__ = 'teacher'

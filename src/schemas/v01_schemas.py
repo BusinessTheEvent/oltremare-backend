@@ -14,6 +14,7 @@ class User(BaseModel):
     name: str
     surname: str
     username: str
+    birthdate: datetime.date
 
 class Student(BaseModel):
     id: int
@@ -58,3 +59,11 @@ class FullCalendarBookingSchema(BaseModel):
     start: datetime.datetime
     end: datetime.datetime
     allDay: bool
+
+class StudentInfoResponse(BaseModel):
+    user: User
+    school_grade: Optional[SchoolGrade]
+
+
+class TeacherInfoResponse(BaseModel):
+    user: User
