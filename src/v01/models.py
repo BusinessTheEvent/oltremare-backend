@@ -31,7 +31,7 @@ class Teacher(Base):
     __tablename__ = 'teacher'
     id = Column(Integer, ForeignKey('users.id'), primary_key=True)
 
-    user = relationship('User')
+    user = relationship('User', lazy='joined')
     bookings = relationship('Booking', back_populates='teacher')
     subjects = relationship('Subject', secondary='teacher_school_subject')
 

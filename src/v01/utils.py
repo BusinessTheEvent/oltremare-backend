@@ -1,8 +1,9 @@
 #controllo 8 lezioni massime in contemporanea in totale
 import datetime
-from fastapi import Depends
+from fastapi import Depends, HTTPException
 from pytest import Session
 from sqlalchemy import text
+from src.auth.models import User
 from src.databases.db import get_db
 from src.schemas.v01_schemas import CreateBookingSchema
 
@@ -16,7 +17,21 @@ def hour_to_index(hour: datetime.datetime) -> int:
     ## FIXME: check if correct using hour instead of minutes
     return ((hour.hour - START_HOUR) * SLOTS_IN_HOUR + hour.minute // SLOT_DURATION) + 1
 
+def get_user_by_email(email: str, db: Session):
+  try:
+    user = db.query(User).filter(User.email == email).first()
+  except Exception as e:
+    raise HTTPException(status_code=500, detail="Error with fetching user from DB")
+
+  if user is None:
+    raise HTTPException(status_code=404, detail="User not found")
+  
+  return user
+
 def check_lesson_availability(booking_to_do: CreateBookingSchema, db: Session = Depends(get_db)):
+    id_student = get_user_by_email(booking_to_do.email_student, db).id
+    id_teacher = get_user_by_email(booking_to_do.email_teacher, db).id
+
     query = text(f"""
     SELECT a.campo1 AS id_slot, SUM(campo2) AS n_posti_disponibili 
     FROM (
@@ -29,7 +44,7 @@ def check_lesson_availability(booking_to_do: CreateBookingSchema, db: Session = 
           JOIN public.booking_slot bs ON b.id_booking = bs.id_booking
           WHERE b.start_datetime BETWEEN to_timestamp('{booking_to_do.start_datetime.date()} 00:00:00', 'YYYY-MM-DD HH24:MI:SS') 
             AND to_timestamp('{booking_to_do.start_datetime.date()} 23:59:59', 'YYYY-MM-DD HH24:MI:SS')
-            AND (id_student = {booking_to_do.id_student} OR id_teacher = {booking_to_do.id_teacher})
+            AND (id_student = {id_student} OR id_teacher = {id_teacher})
         )
       )
       UNION

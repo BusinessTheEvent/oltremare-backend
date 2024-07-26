@@ -3,6 +3,7 @@ from typing import Annotated
 from fastapi import Depends, FastAPI, Response, status
 from fastapi.security import OAuth2PasswordBearer
 from passlib.context import CryptContext
+from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import inspect, text
 from src.auth.models import Role, User
 from src.config import settings
@@ -28,6 +29,15 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 app = FastAPI(version="1.0.3", title="FastAPI authentication core", description="This template provides a robust starting point for implementing authorization in your application. It includes features such as role-based access control, token-based authentication, and user management. The template is designed to be flexible and easy to integrate into existing projects, with clear documentation and modular code. Whether you're building a small application or a large, complex system, this authorization template can help you ensure that your resources are protected and only accessible to authorized users.")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Adjust this to your needs
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 
 if settings.USE_COOKIES_AUTH:
     app.add_middleware(AuthCookieMiddleware)

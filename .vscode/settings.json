@@ -1,0 +1,14 @@
+{
+    "sqltools.connections": [
+        {
+            "previewLimit": 50,
+            "server": "localhost",
+            "port": 5432,
+            "driver": "PostgreSQL",
+            "name": "oltremare",
+            "database": "oltremare-dev",
+            "username": "oltremare-user",
+            "password": "oltremare-password"
+        }
+    ]
+}

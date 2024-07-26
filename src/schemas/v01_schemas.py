@@ -41,8 +41,8 @@ class BookingSchema(BaseModel):
     insert_time: datetime.time
 
 class CreateBookingSchema(BaseModel):
-    id_teacher: int
-    id_student: int
+    email_teacher: str
+    email_student: str
     id_subject: int
     id_school_grade: int
     start_datetime: datetime.datetime

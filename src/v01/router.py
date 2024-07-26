@@ -30,15 +30,14 @@ def healtcheck():
 
 #accessibile solo da admin
 @router.get("/students/all", response_model=list[StudentInfoResponse])
-def get_all_users(db: Session = Depends(get_db))->list[StudentInfoResponse]:
+def get_all_students(db: Session = Depends(get_db))->list[StudentInfoResponse]:
     users = db.query(Student).all()
     return users
 
 #accessibile solo da admin
 @router.get("/teachers/all", response_model=list[TeacherInfoResponse])
-def get_all_users(db: Session = Depends(get_db))->list[TeacherInfoResponse]:
+def get_all_teachers(db: Session = Depends(get_db))->list[TeacherInfoResponse]:
     users = db.query(Teacher).all()
-    print(users)
     return users
 
 #accessibile solo da admin e insegnante (per gli studenti)
@@ -124,6 +123,9 @@ def create_booking(booking_new: CreateBookingSchema, db: Session = Depends(get_d
 
     ## availability check
     available = utils.check_lesson_availability(booking_new, db)
+
+    id_student = utils.get_user_by_email(booking_new.email_student, db).id
+    id_teacher = utils.get_user_by_email(booking_new.email_teacher, db).id
     
     if available == False:
         raise HTTPException(status_code=400, detail="Teacher not available in the selected time slot")
@@ -134,7 +136,7 @@ def create_booking(booking_new: CreateBookingSchema, db: Session = Depends(get_d
         duration = (booking_new.end_datetime - booking_new.start_datetime).seconds // 60
         datetime.timedelta
 
-        new_booking = Booking(**booking_new.model_dump(), duration=duration)
+        new_booking = Booking(**booking_new.model_dump(), duration=duration, id_student=id_student, id_teacher=id_teacher)
 
         start_index = utils.hour_to_index(booking_new.start_datetime) 
         end_index = utils.hour_to_index(booking_new.end_datetime) 
@@ -195,8 +197,8 @@ def delete_booking(id_booking: int, db: Session = Depends(get_db)):
 
 
 #tutte le materie
-@router.get("/subject/all_subject")
-def get_all_subject(db: Session = Depends(get_db)):
+@router.get("/subjects/all")
+def get_all_subjects(db: Session = Depends(get_db)):
     subject = db.query(Subject).all()
     return subject
 
