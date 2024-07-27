@@ -6,6 +6,10 @@ from sqlalchemy import text
 from src.auth.models import User
 from src.databases.db import get_db
 from src.schemas.v01_schemas import CreateBookingSchema
+from src.v01.models import Subject
+from src.default_logger import get_custom_logger
+
+logger = get_custom_logger(__name__)
 
 ## TODO: move to environmant variables
 START_HOUR = 9
@@ -19,18 +23,18 @@ def hour_to_index(hour: datetime.datetime) -> int:
 
 def get_user_by_email(email: str, db: Session):
   try:
-    user = db.query(User).filter(User.email == email).first()
+    user = db.query(User).filter(User.username == email.strip()).first()
   except Exception as e:
+    logger.error(f"Error with fetching user from DB: {e}")
     raise HTTPException(status_code=500, detail="Error with fetching user from DB")
 
   if user is None:
+    logger.info(f"User not found with email: {email}")
     raise HTTPException(status_code=404, detail="User not found")
   
   return user
 
 def check_lesson_availability(booking_to_do: CreateBookingSchema, db: Session = Depends(get_db)):
-    id_student = get_user_by_email(booking_to_do.email_student, db).id
-    id_teacher = get_user_by_email(booking_to_do.email_teacher, db).id
 
     query = text(f"""
     SELECT a.campo1 AS id_slot, SUM(campo2) AS n_posti_disponibili 
@@ -44,7 +48,7 @@ def check_lesson_availability(booking_to_do: CreateBookingSchema, db: Session = 
           JOIN public.booking_slot bs ON b.id_booking = bs.id_booking
           WHERE b.start_datetime BETWEEN to_timestamp('{booking_to_do.start_datetime.date()} 00:00:00', 'YYYY-MM-DD HH24:MI:SS') 
             AND to_timestamp('{booking_to_do.start_datetime.date()} 23:59:59', 'YYYY-MM-DD HH24:MI:SS')
-            AND (id_student = {id_student} OR id_teacher = {id_teacher})
+            AND (id_student = {booking_to_do.id_student} OR id_teacher = {booking_to_do.id_teacher})
         )
       )
       UNION
@@ -76,3 +80,14 @@ def check_lesson_availability(booking_to_do: CreateBookingSchema, db: Session = 
 
     return True
     
+
+def get_subject_by_name(name: str, db: Session):
+    try:
+        subject = db.query(Subject).filter(Subject.name == name).first()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Error with fetching subject from DB")
+
+    if subject is None:
+        raise HTTPException(status_code=404, detail="Subject not found")
+    
+    return subject

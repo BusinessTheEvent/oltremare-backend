@@ -28,7 +28,7 @@ ACCESS_TOKEN_DEFAULT_EXPIRE_MINUTES = 30
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
-app = FastAPI(version="1.0.3", title="FastAPI authentication core", description="This template provides a robust starting point for implementing authorization in your application. It includes features such as role-based access control, token-based authentication, and user management. The template is designed to be flexible and easy to integrate into existing projects, with clear documentation and modular code. Whether you're building a small application or a large, complex system, this authorization template can help you ensure that your resources are protected and only accessible to authorized users.")
+app = FastAPI(debug=True, version="1.0.3", title="FastAPI authentication core", description="This template provides a robust starting point for implementing authorization in your application. It includes features such as role-based access control, token-based authentication, and user management. The template is designed to be flexible and easy to integrate into existing projects, with clear documentation and modular code. Whether you're building a small application or a large, complex system, this authorization template can help you ensure that your resources are protected and only accessible to authorized users.")
 
 app.add_middleware(
     CORSMiddleware,

@@ -4,7 +4,7 @@ from src.auth.models import User
 from src.v01.models import Booking, Teacher, TeacherSchoolSubject, Subject, SchoolGrade, AnagSlot, Student
 from src.databases.db import get_db
 from src.default_logger import get_custom_logger
-from src.schemas.v01_schemas import CreateBookingSchema, BookingSchema, FullCalendarBookingSchema, IdSchema, StudentInfoResponse, TeacherInfoResponse
+from src.schemas.v01_schemas import CreateBookingSchema, BookingSchema, FullCalendarBookingSchema, IdSchema, StudentInfoResponse, TeacherInfoResponse, SubjectSchema
 from fastapi import HTTPException
 from sqlalchemy import extract
 from src.config import settings
@@ -54,7 +54,7 @@ def get_all_booking(db: Session = Depends(get_db)):
 
 #get teacher group by subject
 @router.get("/booking/get_teacher_by_school_and_subject/{id_school_grade}/{id_subject}")
-def get_teacher_by_subject(id_subject: int, id_school_grade: int,db: Session = Depends(get_db)):
+def get_teacher_by_subject(id_subject: int, id_school_grade: int, db: Session = Depends(get_db)):
     # Query and join to get necessary data
     list = db.query(Teacher, TeacherSchoolSubject, Subject)\
                 .join(Teacher, Teacher.id == TeacherSchoolSubject.id)\
@@ -62,13 +62,13 @@ def get_teacher_by_subject(id_subject: int, id_school_grade: int,db: Session = D
                 .filter(Subject.id_subject == id_subject, TeacherSchoolSubject.id_school_grade == id_school_grade)\
                 .all()
 
-    #TODO: finish and test this
-
     # Prepare the response in a serializable format
     result = []
     for teacher, teacherSchoolSubject, subject in list:
         teacher_data = {
             'id': teacher.id,
+            'name': teacher.user.name,
+            'surname': teacher.user.surname,
             # Include other attributes of Teacher model if needed
         }
         teacherSchoolSubject={
@@ -117,16 +117,15 @@ def get_teacher_booking(id_teacher: int, db: Session = Depends(get_db)) -> list[
 #accessibile solo da admin e studente
 #inserimento di una prenotazione
 @router.put("/booking/insert")
-def create_booking(booking_new: CreateBookingSchema, db: Session = Depends(get_db)):    
+def create_booking(booking_new: CreateBookingSchema , db: Session = Depends(get_db)):    
     ## TODO: add secutiry checks
     ## TODO: make utility function to execute complex query safely
+
+    print("booking_new", booking_new.model_dump())
 
     ## availability check
     available = utils.check_lesson_availability(booking_new, db)
 
-    id_student = utils.get_user_by_email(booking_new.email_student, db).id
-    id_teacher = utils.get_user_by_email(booking_new.email_teacher, db).id
-    
     if available == False:
         raise HTTPException(status_code=400, detail="Teacher not available in the selected time slot")
 
@@ -134,9 +133,15 @@ def create_booking(booking_new: CreateBookingSchema, db: Session = Depends(get_d
 
     try:
         duration = (booking_new.end_datetime - booking_new.start_datetime).seconds // 60
-        datetime.timedelta
+        try:
+            assert duration > 0, "Duration must be greater than 0"
+            assert duration == booking_new.duration, "Duration mismatch"
+            assert booking_new.start_datetime >= datetime.datetime.now(), "Start date must be in the future"
+        except AssertionError as e:
+            logger.error(f"Error inserting booking: {e}")
+            raise HTTPException(status_code=400, detail="Invalid booking data")
 
-        new_booking = Booking(**booking_new.model_dump(), duration=duration, id_student=id_student, id_teacher=id_teacher)
+        new_booking = Booking(**booking_new.model_dump())
 
         start_index = utils.hour_to_index(booking_new.start_datetime) 
         end_index = utils.hour_to_index(booking_new.end_datetime) 
@@ -150,13 +155,14 @@ def create_booking(booking_new: CreateBookingSchema, db: Session = Depends(get_d
         available = utils.check_lesson_availability(booking_new, db)
         
         if not available:
+            logger.info(f"One of the users not available in the selected time slot")
             raise HTTPException(status_code=400, detail="Teacher not available in the selected time slot")
 
-        db.commit()
+        #db.commit()
 
     except IntegrityError as e:
         db.rollback()
-        logger.error(f"Error inserting booking: {e}")
+        logger.error(f"Error inserting booking, booking already exists: {e}")
         raise HTTPException(status_code=400, detail="Booking already exists")
 
     return HTTPException(status_code=200, detail="Booking created successfully")
@@ -197,8 +203,8 @@ def delete_booking(id_booking: int, db: Session = Depends(get_db)):
 
 
 #tutte le materie
-@router.get("/subjects/all")
-def get_all_subjects(db: Session = Depends(get_db)):
+@router.get("/subjects/all", response_model=list[SubjectSchema])
+def get_all_subjects(db: Session = Depends(get_db))-> list[SubjectSchema]:
     subject = db.query(Subject).all()
     return subject
 

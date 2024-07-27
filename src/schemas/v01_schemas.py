@@ -6,15 +6,16 @@ class IdSchema(BaseModel):
     id: int
 
 class SchoolGrade(BaseModel):
+    id_school_grade: int
     grade: str
     price: float
 
 class User(BaseModel):
     id: int
     name: str
-    surname: str
+    surname: Optional[str]
     username: str
-    birthdate: datetime.date
+    birthdate: Optional[datetime.date]
 
 class Student(BaseModel):
     id: int
@@ -23,13 +24,15 @@ class Student(BaseModel):
 class Teacher(BaseModel):
     id: int
 
-class Subject(BaseModel):
+class SubjectSchema(BaseModel):
+    id_subject: int
     name: str
+    
 
 class BookingSchema(BaseModel):
     teacher: Optional[Teacher]
     student: Optional[Student]
-    subject: Subject
+    subject: SubjectSchema
     school_grade: SchoolGrade
     start_datetime: datetime.datetime
     end_datetime: datetime.datetime
@@ -41,17 +44,14 @@ class BookingSchema(BaseModel):
     insert_time: datetime.time
 
 class CreateBookingSchema(BaseModel):
-    email_teacher: str
-    email_student: str
+    id_teacher: int
+    id_student: int
     id_subject: int
-    id_school_grade: int
+    duration: int
     start_datetime: datetime.datetime
     end_datetime: datetime.datetime
     notes: Optional[str]
-    attended: bool
     insert_id_user: int
-    insert_date: datetime.date
-    insert_time: datetime.time
 
 class FullCalendarBookingSchema(BaseModel):
     id_booking: int
