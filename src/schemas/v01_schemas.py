@@ -50,7 +50,7 @@ class CreateBookingSchema(BaseModel):
     duration: int
     start_datetime: datetime.datetime
     end_datetime: datetime.datetime
-    notes: Optional[str]
+    notes: Optional[str] = ""
     insert_id_user: int
 
 class FullCalendarBookingSchema(BaseModel):

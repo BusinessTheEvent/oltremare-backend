@@ -68,7 +68,7 @@ def init_roles_table(role_model):
         db.commit()
 
 def init_users_table(user_model, role_model, pwd_context):
-    ## TODO: find a way to import data from configs
+    """ ## TODO: find a way to import data from configs
     with Session(engine_internal) as db:
         new_user = user_model(
             username="admin",
@@ -84,7 +84,8 @@ def init_users_table(user_model, role_model, pwd_context):
         db.commit()
 
         if settings.DEBUG:
-            logger.debug(f"User {new_user.username} created")
+            logger.debug(f"User {new_user.username} created") """
+    pass
             
 def init_tables_with_file(file, db: Session):
     ## EXECUTE CONTENT OF FILE AS RAW QUERY

@@ -130,7 +130,7 @@ INSERT INTO public.anag_slot (id_slot) VALUES
 
 
 
-INSERT INTO public.booking
+/* INSERT INTO public.booking
 (id_booking, id_student, id_teacher, id_school_grade, start_datetime, end_datetime, duration, id_subject, notes, attended, insert_id_user, insert_date, insert_time)
 VALUES(1, 4, 1, 2, '2024-07-20 09:00:00', '2024-07-20 10:00:00', 1, 1, 'note', true,  1, '2024-07-18', '23:39:00');
 INSERT INTO booking_slot (id_booking, id_slot) VALUES(1, 1);
@@ -172,4 +172,4 @@ INSERT INTO public.booking
 (id_booking, id_student, id_teacher, id_school_grade, start_datetime, end_datetime, duration, id_subject, notes, attended, insert_id_user, insert_date, insert_time)
 VALUES(7, 6, 3, 3, '2024-07-20 13:00:00', '2024-07-20 14:00:00', 1, 1, 'note', false, 1, '2024-07-18', '23:39:00');
 INSERT INTO booking_slot (id_booking, id_slot) VALUES(7, 9);
-INSERT INTO booking_slot (id_booking, id_slot) VALUES(7, 10);
+INSERT INTO booking_slot (id_booking, id_slot) VALUES(7, 10); */

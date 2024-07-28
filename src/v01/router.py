@@ -6,7 +6,7 @@ from src.databases.db import get_db
 from src.default_logger import get_custom_logger
 from src.schemas.v01_schemas import CreateBookingSchema, BookingSchema, FullCalendarBookingSchema, IdSchema, StudentInfoResponse, TeacherInfoResponse, SubjectSchema
 from fastapi import HTTPException
-from sqlalchemy import extract
+from sqlalchemy import extract, or_
 from src.config import settings
 import datetime
 from src.v01 import utils
@@ -121,8 +121,6 @@ def create_booking(booking_new: CreateBookingSchema , db: Session = Depends(get_
     ## TODO: add secutiry checks
     ## TODO: make utility function to execute complex query safely
 
-    print("booking_new", booking_new.model_dump())
-
     ## availability check
     available = utils.check_lesson_availability(booking_new, db)
 
@@ -137,11 +135,12 @@ def create_booking(booking_new: CreateBookingSchema , db: Session = Depends(get_
             assert duration > 0, "Duration must be greater than 0"
             assert duration == booking_new.duration, "Duration mismatch"
             assert booking_new.start_datetime >= datetime.datetime.now(), "Start date must be in the future"
+            assert booking_new.end_datetime > booking_new.start_datetime, "End date must be after start date"
         except AssertionError as e:
             logger.error(f"Error inserting booking: {e}")
             raise HTTPException(status_code=400, detail="Invalid booking data")
 
-        new_booking = Booking(**booking_new.model_dump())
+        new_booking = Booking(**booking_new.model_dump(), id_school_grade=1, attended=False, insert_time=datetime.datetime.now().time(), insert_date=datetime.datetime.now().date())
 
         start_index = utils.hour_to_index(booking_new.start_datetime) 
         end_index = utils.hour_to_index(booking_new.end_datetime) 
@@ -158,12 +157,16 @@ def create_booking(booking_new: CreateBookingSchema , db: Session = Depends(get_
             logger.info(f"One of the users not available in the selected time slot")
             raise HTTPException(status_code=400, detail="Teacher not available in the selected time slot")
 
-        #db.commit()
+        db.commit()
 
     except IntegrityError as e:
         db.rollback()
         logger.error(f"Error inserting booking, booking already exists: {e}")
-        raise HTTPException(status_code=400, detail="Booking already exists")
+        raise HTTPException(status_code=409, detail="Booking already exists")
+    except Exception as e:
+        db.rollback()
+        logger.error(f"Error inserting booking: {e}")
+        raise HTTPException(status_code=400, detail="Error inserting booking")
 
     return HTTPException(status_code=200, detail="Booking created successfully")
 
@@ -233,8 +236,8 @@ def get_booking_by_month_per_teacher(month: int, id_teacher: int, db: Session = 
 @router.post("/booking/get_booking_by_user/fullCalendar", response_model=list[FullCalendarBookingSchema])
 def get_bookings_by_user_fullCalendar(id_user: IdSchema, db: Session = Depends(get_db)) -> list[FullCalendarBookingSchema]:
 
-    bookings = db.query(Booking).filter(Booking.id_student == id_user.id or Booking.id_teacher == id_user.id ).all()
-
+    bookings = db.query(Booking).filter(or_(Booking.id_student == id_user.id, Booking.id_teacher == id_user.id )).all()
+    print(bookings)
     result = []
     for booking in bookings:
         event = {
