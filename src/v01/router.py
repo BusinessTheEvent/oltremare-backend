@@ -142,7 +142,7 @@ def create_booking(booking_new: CreateBookingSchema , db: Session = Depends(get_
             logger.error(f"Error inserting booking: {e}")
             raise HTTPException(status_code=400, detail="Invalid booking data")
 
-        new_booking = Booking(**booking_new.model_dump(), id_school_grade=1, attended=False, insert_time=datetime.datetime.now().time(), insert_date=datetime.datetime.now().date())
+        new_booking = Booking(**booking_new.model_dump(), id_school_grade=utils.get_student_school_grade(booking_new.id_student, db), attended=False, insert_time=datetime.datetime.now().time(), insert_date=datetime.datetime.now().date())
 
         start_index = utils.hour_to_index(booking_new.start_datetime) 
         end_index = utils.hour_to_index(booking_new.end_datetime) 
@@ -218,7 +218,7 @@ def get_all_subjects(db: Session = Depends(get_db))-> list[SubjectSchema]:
 def get_all_school_grade(db: Session = Depends(get_db)):
     school = db.query(SchoolGrade).all()
     return school
-
+    
 
 #get booking by month per student
 @router.get("/booking/get_booking_by_month_per_student/{month}/{id_student}")

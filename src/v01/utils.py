@@ -6,7 +6,7 @@ from sqlalchemy import text
 from src.auth.models import User
 from src.databases.db import get_db
 from src.schemas.v01_schemas import CreateBookingSchema
-from src.v01.models import Subject
+from src.v01.models import Subject, Student
 from src.default_logger import get_custom_logger
 
 logger = get_custom_logger(__name__)
@@ -91,3 +91,16 @@ def get_subject_by_name(name: str, db: Session):
         raise HTTPException(status_code=404, detail="Subject not found")
     
     return subject
+
+
+#get school grade by student id
+def get_student_school_grade(student_id: int, db: Session):
+    try:
+        student = db.query(Student).filter(Student.id == student_id).first()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Error with fetching student from DB")
+
+    if student is None:
+        raise HTTPException(status_code=404, detail="Student not found")
+    
+    return student.id_school_grade
