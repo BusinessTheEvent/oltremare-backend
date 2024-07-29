@@ -74,7 +74,7 @@ def check_lesson_availability(booking_to_do: CreateBookingSchema, db: Session = 
     start_index = hour_to_index(booking_to_do.start_datetime)
     end_index = hour_to_index(booking_to_do.end_datetime)
     
-    for i in range(start_index-1, end_index):
+    for i in range(start_index-1, end_index-1):
         if result[i] <= 0:
             return False
 

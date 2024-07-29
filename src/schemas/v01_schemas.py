@@ -23,6 +23,7 @@ class Student(BaseModel):
 
 class Teacher(BaseModel):
     id: int
+    user: User
 
 class SubjectSchema(BaseModel):
     id_subject: int
@@ -42,6 +43,7 @@ class BookingSchema(BaseModel):
     insert_id_user: int
     insert_date: datetime.date
     insert_time: datetime.time
+    price: Optional[float] = 0.0
 
 class CreateBookingSchema(BaseModel):
     id_teacher: int

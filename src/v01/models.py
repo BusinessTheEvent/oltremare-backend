@@ -1,3 +1,4 @@
+from decimal import Decimal
 from sqlalchemy import Column, Integer, String, Boolean, Numeric, ForeignKey, DateTime, Date, Time
 from sqlalchemy.orm import relationship
 from src.auth.models import User
@@ -67,6 +68,10 @@ class Booking(Base):
     @property
     def name(self):
         return f"Lezione di {self.subject.name}"
+
+    @property
+    def price(self):
+        return self.school_grade.price * Decimal(self.duration / 60)
 
 
 

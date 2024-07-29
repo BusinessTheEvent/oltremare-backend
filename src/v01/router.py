@@ -1,3 +1,4 @@
+from decimal import Decimal
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from src.auth.models import User
@@ -99,8 +100,8 @@ def get_all_students_booking(db: Session = Depends(get_db)) -> list[BookingSchem
 #accessibile da tutti
 @router.get("/booking/{id_booking}", response_model=BookingSchema)
 def get_booking(id_booking: int, db: Session = Depends(get_db)) -> BookingSchema:
-    book = db.query(Booking).filter(Booking.id_booking == id_booking).first()
-    return book
+    booking = db.query(Booking).filter(Booking.id_booking == id_booking).first()
+    return booking
 
 #tutte le prenotazioi di uno studente
 @router.get("/booking/student/{id_student}", response_model=list[BookingSchema])
@@ -125,6 +126,7 @@ def create_booking(booking_new: CreateBookingSchema , db: Session = Depends(get_
     available = utils.check_lesson_availability(booking_new, db)
 
     if available == False:
+        logger.info(f"Teacher {booking_new.id_teacher} not available in the selected time slot")
         raise HTTPException(status_code=400, detail="Teacher not available in the selected time slot")
 
     slots = db.query(AnagSlot).all()
