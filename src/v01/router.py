@@ -42,6 +42,11 @@ def get_all_teachers(db: Session = Depends(get_db))->list[TeacherInfoResponse]:
     return users
 
 #accessibile solo da admin e insegnante (per gli studenti)
+@router.get("/students/{student_id}")
+def get_student(student_id: int, db: Session = Depends(get_db)):
+    student = db.query(Student).filter(Student.id == student_id).first()
+    return student
+
 @router.get("/users/{user_id}")
 def get_user(user_id: int, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.id == user_id).first()
@@ -96,6 +101,7 @@ def get_all_students_booking(db: Session = Depends(get_db)) -> list[BookingSchem
     students_bookings = db.query(Booking).all()
 
     return students_bookings
+
 
 #accessibile da tutti
 @router.get("/booking/{id_booking}", response_model=BookingSchema)
