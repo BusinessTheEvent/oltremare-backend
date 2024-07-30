@@ -234,6 +234,20 @@ def get_booking_by_month_per_teacher(month: int, id_teacher: int, db: Session = 
     booking = db.query(Booking).filter(extract('month', Booking.start_datetime) == month, Booking.id_teacher == id_teacher).all()
     return booking
 
+#get booking by month and year per student
+@router.get("/booking/get_booking_by_month_and_year/student/{month}/{year}/{id_student}")
+def get_booking_by_month_and_year_per_student(month: int, year: int, id_student: int, db: Session = Depends(get_db)):
+    # Query and join to get necessary data
+    booking = db.query(Booking).filter(extract('month', Booking.start_datetime) == month, extract('year', Booking.start_datetime) == year, Booking.id_student == id_student).all()
+    return booking
+
+#get booking by month and year per teacher
+@router.get("/booking/get_booking_by_month_and_year/teacher/{month}/{year}/{id_teacher}")
+def get_booking_by_month_and_year_per_teacher(month: int, year: int, id_teacher: int, db: Session = Depends(get_db)):
+    # Query and join to get necessary data
+    booking = db.query(Booking).filter(extract('month', Booking.start_datetime) == month, extract('year', Booking.start_datetime) == year, Booking.id_teacher == id_teacher).all()
+    return booking
+
 #get booking by user in fullCalendar format
 @router.post("/booking/get_booking_by_user/fullCalendar", response_model=list[FullCalendarBookingSchema])
 def get_bookings_by_user_fullCalendar(id_user: IdSchema, db: Session = Depends(get_db)) -> list[FullCalendarBookingSchema]:
