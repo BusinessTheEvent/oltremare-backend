@@ -52,6 +52,16 @@ def get_user(user_id: int, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.id == user_id).first()
     return user
     
+#verify if the the is the user or not
+@router.get("/users/is_teacher/{user_id}")
+def get_is_teacher(user_id: int, db: Session = Depends(get_db)):
+    # I suppose that if the user isn't a teacher, the only possible type of user is student
+    teacher = db.query(Teacher).filter(Teacher.id == user_id).first()
+    if teacher:
+        return True
+    else:
+        return False
+
 #accessibile solo da admin
 @router.get("/booking/all")
 def get_all_booking(db: Session = Depends(get_db)):
