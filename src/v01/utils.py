@@ -5,7 +5,7 @@ from pytest import Session
 from sqlalchemy import text
 from src.auth.models import User
 from src.databases.db import get_db
-from src.schemas.v01_schemas import CreateBookingSchema
+from src.schemas.v01_schemas import CreateBookingSchema, UpdateUserSchema
 from src.v01.models import Subject, Student
 from src.default_logger import get_custom_logger
 
@@ -104,3 +104,12 @@ def get_student_school_grade(student_id: int, db: Session):
         raise HTTPException(status_code=404, detail="Student not found")
     
     return student.id_school_grade
+
+#update dei campi username e password di un utente
+def update_user(user_id: int, user_new: UpdateUserSchema, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.id == user_id).first()
+    user.username = user_new.username
+    user.password = user_new.password
+    db.add(user)
+    db.commit()
+    return user

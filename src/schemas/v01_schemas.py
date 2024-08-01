@@ -17,6 +17,15 @@ class User(BaseModel):
     username: str
     birthdate: Optional[datetime.date]
 
+class UpdateUserSchema(BaseModel):
+    username: Optional[str]
+    password: Optional[str]
+
+class UpdateStudentSchema(BaseModel):
+    id_school_grade: Optional[int]
+    password: Optional[str]
+    username: Optional[str]
+
 class Student(BaseModel):
     id: int
     user: User

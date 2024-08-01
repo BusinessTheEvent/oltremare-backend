@@ -5,7 +5,7 @@ from src.auth.models import User
 from src.v01.models import Booking, Teacher, TeacherSchoolSubject, Subject, SchoolGrade, AnagSlot, Student
 from src.databases.db import get_db
 from src.default_logger import get_custom_logger
-from src.schemas.v01_schemas import CreateBookingSchema, BookingSchema, FullCalendarBookingSchema, IdSchema, StudentInfoResponse, TeacherInfoResponse, SubjectSchema
+from src.schemas.v01_schemas import CreateBookingSchema, BookingSchema, FullCalendarBookingSchema, IdSchema, StudentInfoResponse, TeacherInfoResponse, SubjectSchema, UpdateUserSchema, UpdateStudentSchema
 from fastapi import HTTPException
 from sqlalchemy import extract, or_
 from src.config import settings
@@ -14,6 +14,8 @@ from src.v01 import utils
 from sqlalchemy.exc import IntegrityError
 
 from src.default_logger import get_custom_logger
+from fastapi import HTTPException
+
 
 logger = get_custom_logger(__name__)
 
@@ -46,6 +48,28 @@ def get_all_teachers(db: Session = Depends(get_db))->list[TeacherInfoResponse]:
 def get_student(student_id: int, db: Session = Depends(get_db)):
     student = db.query(Student).filter(Student.id == student_id).first()
     return student
+
+
+#update dei campi username, password, id_schoolgrade di uno studente
+@router.patch("/students/update/{student_id}")
+def update_student(student_id: int, student1: UpdateStudentSchema, db: Session = Depends(get_db)):
+    try:
+        student = db.query(Student).filter(Student.id == student_id).first()
+
+        if student is None:
+            raise HTTPException(status_code=404, detail="Student not found")
+
+        student.user.username = student1.username
+        student.user.password = student1.password
+        student.id_school_grade = student1.id_school_grade
+
+        db.add(student)
+        db.commit()
+        
+        return {"message": "Student updated successfully"}
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail="Error updating student")
 
 @router.get("/users/{user_id}")
 def get_user(user_id: int, db: Session = Depends(get_db)):
@@ -111,7 +135,6 @@ def get_all_students_booking(db: Session = Depends(get_db)) -> list[BookingSchem
     students_bookings = db.query(Booking).all()
 
     return students_bookings
-
 
 #accessibile da tutti
 @router.get("/booking/{id_booking}", response_model=BookingSchema)
