@@ -99,18 +99,6 @@ def update_teacher_school_subject(teacher_id: int, teacher1: UpdateTeacherSchema
             isChecked = subject.isChecked
             levels = subject.levels
 
-            
-             
-            ## get all level teached for this subject
-                
-                #devo controllare quali ha checkato con la modifica e quali no
-                
-                #se esistevano gia le righe , non faccio nulla
-
-                #se non esistevano le righe, le aggiungo
-
-                #se esistevano le righe e non sono state checkate, le rimuovo
-
             ## if level is not checked, remove it, else add it
             for level in levels:
                 teacher_subject_level = db.query(TeacherSchoolSubject).filter(TeacherSchoolSubject.id == teacher_id, TeacherSchoolSubject.id_subject == subject_id, TeacherSchoolSubject.id_school_grade == school_grades_dict[level.level]).first()    
