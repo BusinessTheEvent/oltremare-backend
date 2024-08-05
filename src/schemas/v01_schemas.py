@@ -26,6 +26,26 @@ class UpdateStudentSchema(BaseModel):
     password: Optional[str]
     username: Optional[str]
 
+class TeacherSchoolSubjectSchema(BaseModel):
+    id: int
+    id_school_grade: int
+    id_subject: int
+
+class SchoolLevelSchema(BaseModel):
+    level: str
+    isChecked: bool
+
+class SubjectPatchSchema(BaseModel):
+    id: int
+    name: Optional[str]
+    isChecked: bool
+    levels: Optional[list[SchoolLevelSchema]]
+
+class UpdateTeacherSchema(BaseModel):
+    username: Optional[str]
+    password: Optional[str]
+    teacher_subjects: Optional[list[SubjectPatchSchema]]
+
 class Student(BaseModel):
     id: int
     user: User
