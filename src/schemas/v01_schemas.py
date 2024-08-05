@@ -98,3 +98,4 @@ class StudentInfoResponse(BaseModel):
 
 class TeacherInfoResponse(BaseModel):
     user: User
+    subjects: list[SubjectSchema]

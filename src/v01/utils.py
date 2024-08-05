@@ -5,7 +5,7 @@ from pytest import Session
 from sqlalchemy import text
 from src.auth.models import User
 from src.databases.db import get_db
-from src.schemas.v01_schemas import CreateBookingSchema, UpdateUserSchema
+from src.schemas.v01_schemas import CreateBookingSchema, UpdateUserSchema, TeacherSchoolSubjectSchema
 from src.v01.models import Subject, Student
 from src.default_logger import get_custom_logger
 
@@ -113,3 +113,14 @@ def update_user(user_id: int, user_new: UpdateUserSchema, db: Session = Depends(
     db.add(user)
     db.commit()
     return user
+
+# #update delle materie che insegna e a che livello di scuola un insegnante
+# def update_teacher_school_subject(teacher_id: int, teacher_new: TeacherSchoolSubjectSchema, db: Session = Depends(get_db)):
+#     teacher = db.query(User).filter(User.id == teacher_id).first()
+#     teacher.id_school_grade = teacher_new.id_school_grade
+#     teacher.teacher_subjects = teacher_new.teacher_subjects
+#     db.add(teacher)
+#     db.commit()
+#     return teacher
+
+  

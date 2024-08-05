@@ -5,7 +5,7 @@ from src.auth.models import User
 from src.v01.models import Booking, Teacher, TeacherSchoolSubject, Subject, SchoolGrade, AnagSlot, Student
 from src.databases.db import get_db
 from src.default_logger import get_custom_logger
-from src.schemas.v01_schemas import CreateBookingSchema, BookingSchema, FullCalendarBookingSchema, IdSchema, StudentInfoResponse, TeacherInfoResponse, SubjectSchema, UpdateUserSchema, UpdateStudentSchema
+from src.schemas.v01_schemas import CreateBookingSchema, BookingSchema, FullCalendarBookingSchema, IdSchema, StudentInfoResponse, TeacherInfoResponse, SubjectSchema, UpdateUserSchema, UpdateStudentSchema, UpdateTeacherSchema
 from fastapi import HTTPException
 from sqlalchemy import extract, or_
 from src.config import settings
@@ -49,6 +49,11 @@ def get_student(student_id: int, db: Session = Depends(get_db)):
     student = db.query(Student).filter(Student.id == student_id).first()
     return student
 
+#accessibile solo da admin e insegnante (per gli studenti)
+@router.get("/teachers/{teacher_id}", response_model=TeacherInfoResponse)
+def get_student(teacher_id: int, db: Session = Depends(get_db))->TeacherInfoResponse:
+    teacher = db.query(Teacher).filter(Teacher.id == teacher_id).first()
+    return teacher
 
 #update dei campi username, password, id_schoolgrade di uno studente
 @router.patch("/students/update/{student_id}")
@@ -70,6 +75,61 @@ def update_student(student_id: int, student1: UpdateStudentSchema, db: Session =
     except Exception as e:
         db.rollback()
         raise HTTPException(status_code=500, detail="Error updating student")
+    
+@router.patch("/teachers/update/{teacher_id}")
+def update_teacher_school_subject(teacher_id: int, teacher1: UpdateTeacherSchema, db: Session = Depends(get_db)):
+    try:
+        teacher = db.query(Teacher).filter(Teacher.id == teacher_id).first()
+        school_grades = db.query(SchoolGrade).all()
+        # school grades to dict
+        school_grades_dict = {} # {'Elementari': 1, 'Medie': 2, 'Superiori': 3}
+        for school_grade in school_grades:
+            school_grades_dict[school_grade.grade] = school_grade.id_school_grade
+
+        if teacher is None:
+            raise HTTPException(status_code=404, detail="Teacher not found")
+        
+        teacher.user.username = teacher1.username
+        #teacher.user.password = teacher1.password ## FIXME: do better password setting
+
+        # Update the subjects taught by the teacher
+        for subject in teacher1.teacher_subjects: # for every checkbox in the frontend list
+            subject_id = subject.id
+            subject_name = subject.name
+            isChecked = subject.isChecked
+            levels = subject.levels
+
+            
+             
+            ## get all level teached for this subject
+                
+                #devo controllare quali ha checkato con la modifica e quali no
+                
+                #se esistevano gia le righe , non faccio nulla
+
+                #se non esistevano le righe, le aggiungo
+
+                #se esistevano le righe e non sono state checkate, le rimuovo
+
+            ## if level is not checked, remove it, else add it
+            for level in levels:
+                teacher_subject_level = db.query(TeacherSchoolSubject).filter(TeacherSchoolSubject.id == teacher_id, TeacherSchoolSubject.id_subject == subject_id, TeacherSchoolSubject.id_school_grade == school_grades_dict[level.level]).first()    
+                
+                if teacher_subject_level is None and level.isChecked:
+                    teacher_subject_level = TeacherSchoolSubject(id=teacher_id, id_subject=subject_id, id_school_grade=school_grades_dict[level.level])
+                    db.add(teacher_subject_level)
+                elif teacher_subject_level is not None and not level.isChecked:
+                    db.delete(teacher_subject_level)
+
+        db.add(teacher)
+        db.commit()
+        return {"message": "Teacher subjects updated successfully"}
+    
+    except Exception as e:
+        print(e)
+        db.rollback()
+        raise HTTPException(status_code=500, detail="Error updating teacher subjects")
+
 
 @router.get("/users/{user_id}")
 def get_user(user_id: int, db: Session = Depends(get_db)):
