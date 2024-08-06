@@ -1,6 +1,6 @@
 from decimal import Decimal
 from fastapi import APIRouter, Depends
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from src.auth.models import User
 from src.v01.models import Booking, Teacher, TeacherSchoolSubject, Subject, SchoolGrade, AnagSlot, Student
 from src.databases.db import get_db
@@ -23,6 +23,9 @@ START_HOUR = 9
 END_HOUR = 18
 SLOT_DURATION = 30
 SLOTS_IN_HOUR = 60 // SLOT_DURATION
+
+SCHOOL_GRADES_DICT = {'Elementari': 1, 'Medie': 2, 'Superiori': 3}
+SCHOOL_GRADES_DICT_REVERSE = {1: 'Elementari', 2: 'Medie', 3: 'Superiori'}
 
 router = APIRouter()
 logger = get_custom_logger(__name__)
@@ -55,6 +58,33 @@ def get_student(teacher_id: int, db: Session = Depends(get_db))->TeacherInfoResp
     teacher = db.query(Teacher).filter(Teacher.id == teacher_id).first()
     return teacher
 
+
+@router.get("/teachers/subjects/{teacher_id}")
+def get_teacher_subjects(teacher_id: int, db: Session = Depends(get_db)):
+    # Query and join to get necessary data
+    subjects = db.query(TeacherSchoolSubject).filter(TeacherSchoolSubject.id == teacher_id).all()
+
+
+    """
+    {'id_school_grade': 1, 'id': 5, 'id_subject': 1}
+    {'id_school_grade': 2, 'id': 5, 'id_subject': 1}
+    {'id_school_grade': 1, 'id': 5, 'id_subject': 2}
+    {'id_school_grade': 2, 'id': 5, 'id_subject': 2}
+    {'id_school_grade': 3, 'id': 5, 'id_subject': 2}
+    """
+
+
+    # Prepare the response in a serializable format
+    result = {}
+    for subject in subjects:
+        result[subject.id_subject] = {}
+
+    for subject in subjects:
+        result[subject.id_subject][subject.id_school_grade] = True
+
+    return result
+
+
 #update dei campi username, password, id_schoolgrade di uno studente
 @router.patch("/students/update/{student_id}")
 def update_student(student_id: int, student1: UpdateStudentSchema, db: Session = Depends(get_db)):
@@ -80,11 +110,6 @@ def update_student(student_id: int, student1: UpdateStudentSchema, db: Session =
 def update_teacher_school_subject(teacher_id: int, teacher1: UpdateTeacherSchema, db: Session = Depends(get_db)):
     try:
         teacher = db.query(Teacher).filter(Teacher.id == teacher_id).first()
-        school_grades = db.query(SchoolGrade).all()
-        # school grades to dict
-        school_grades_dict = {} # {'Elementari': 1, 'Medie': 2, 'Superiori': 3}
-        for school_grade in school_grades:
-            school_grades_dict[school_grade.grade] = school_grade.id_school_grade
 
         if teacher is None:
             raise HTTPException(status_code=404, detail="Teacher not found")
@@ -101,10 +126,10 @@ def update_teacher_school_subject(teacher_id: int, teacher1: UpdateTeacherSchema
 
             ## if level is not checked, remove it, else add it
             for level in levels:
-                teacher_subject_level = db.query(TeacherSchoolSubject).filter(TeacherSchoolSubject.id == teacher_id, TeacherSchoolSubject.id_subject == subject_id, TeacherSchoolSubject.id_school_grade == school_grades_dict[level.level]).first()    
+                teacher_subject_level = db.query(TeacherSchoolSubject).filter(TeacherSchoolSubject.id == teacher_id, TeacherSchoolSubject.id_subject == subject_id, TeacherSchoolSubject.id_school_grade == SCHOOL_GRADES_DICT[level.level]).first()    
                 
                 if teacher_subject_level is None and level.isChecked:
-                    teacher_subject_level = TeacherSchoolSubject(id=teacher_id, id_subject=subject_id, id_school_grade=school_grades_dict[level.level])
+                    teacher_subject_level = TeacherSchoolSubject(id=teacher_id, id_subject=subject_id, id_school_grade=SCHOOL_GRADES_DICT[level.level])
                     db.add(teacher_subject_level)
                 elif teacher_subject_level is not None and not level.isChecked:
                     db.delete(teacher_subject_level)
@@ -322,17 +347,43 @@ def get_booking_by_month_per_teacher(month: int, id_teacher: int, db: Session = 
     return booking
 
 #get booking by month and year per student
-@router.get("/booking/get_booking_by_month_and_year/student/{month}/{year}/{id_student}")
-def get_booking_by_month_and_year_per_student(month: int, year: int, id_student: int, db: Session = Depends(get_db)):
+@router.get("/booking/get_booking_by_month_and_year/student/{month}/{year}/{id_student}", response_model=list[BookingSchema])
+def get_booking_by_month_and_year_per_student(month: int, year: int, id_student: int, db: Session = Depends(get_db))->list[BookingSchema]:
+
+    print(month, year, id_student)
+    
     # Query and join to get necessary data
-    booking = db.query(Booking).filter(extract('month', Booking.start_datetime) == month, extract('year', Booking.start_datetime) == year, Booking.id_student == id_student).all()
+    if month == 0 and year == 0:
+        print("no everything")
+        booking = db.query(Booking).filter(Booking.id_student == id_student).all()
+    elif month == 0:
+        print("no month")
+        booking = db.query(Booking).filter(extract('year', Booking.start_datetime) == year, Booking.id_student == id_student).all()
+    elif year == 0:
+        print("no year")
+        booking = db.query(Booking).filter(extract('month', Booking.start_datetime) == month, Booking.id_student == id_student).all()
+    else:
+        print("everything")
+        booking = db.query(Booking).filter(extract('month', Booking.start_datetime) == month, extract('year', Booking.start_datetime) == year, Booking.id_student == id_student).all()
+
     return booking
 
 #get booking by month and year per teacher
-@router.get("/booking/get_booking_by_month_and_year/teacher/{month}/{year}/{id_teacher}")
-def get_booking_by_month_and_year_per_teacher(month: int, year: int, id_teacher: int, db: Session = Depends(get_db)):
+@router.get("/booking/get_booking_by_month_and_year/teacher/{month}/{year}/{id_teacher}", response_model=list[BookingSchema])
+def get_booking_by_month_and_year_per_teacher(month: int, year: int, id_teacher: int, db: Session = Depends(get_db))->list[BookingSchema]:
+    
+    print(month, year, id_teacher)
+
     # Query and join to get necessary data
-    booking = db.query(Booking).filter(extract('month', Booking.start_datetime) == month, extract('year', Booking.start_datetime) == year, Booking.id_teacher == id_teacher).all()
+    if month == 0 and year == 0:
+        booking = db.query(Booking).filter(Booking.id_teacher == id_teacher).all()
+    elif month == 0:
+        booking = db.query(Booking).filter(extract('year', Booking.start_datetime) == year, Booking.id_teacher == id_teacher).all()
+    elif year == 0:
+        booking = db.query(Booking).filter(extract('month', Booking.start_datetime) == month, Booking.id_teacher == id_teacher).all()
+    else:
+        booking = db.query(Booking).filter(extract('month', Booking.start_datetime) == month, extract('year', Booking.start_datetime) == year, Booking.id_teacher == id_teacher).all()
+
     return booking
 
 #get booking by user in fullCalendar format
