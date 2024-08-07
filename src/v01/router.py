@@ -234,6 +234,10 @@ def create_booking(booking_new: CreateBookingSchema , db: Session = Depends(get_
     ## TODO: add secutiry checks
     ## TODO: make utility function to execute complex query safely
 
+    if booking_new.start_datetime < datetime.datetime.now() + datetime.timedelta(hours=72):
+        logger.info(f"Cannot book a lesson before 72 hours from the start date")
+        raise HTTPException(status_code=400, detail="Cannot book a lesson before 72 hours from the start date")
+
     ## availability check
     available = utils.check_lesson_availability(booking_new, db)
 
@@ -312,6 +316,13 @@ def update_booking(id_booking: int, booking: CreateBookingSchema, db: Session = 
 @router.delete("/booking/{id_booking}")
 def delete_booking(id_booking: int, db: Session = Depends(get_db)):
     booking = db.query(Booking).filter(Booking.id_booking == id_booking).first()
+
+    today = datetime.datetime.now()
+    if booking is None:
+        raise HTTPException(status_code=404, detail="Booking not found")
+    elif booking.start_datetime < today + datetime.timedelta(hours=72):
+        raise HTTPException(status_code=400, detail="Cannot delete bookings before 72 hours from the start date")
+    
     db.delete(booking)
 
     ## TODO: implement on cascade?
