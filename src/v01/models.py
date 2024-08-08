@@ -143,3 +143,12 @@ class AnagSlot(Base):
     id_slot = Column(Integer, primary_key=True)
 
     bookings = relationship('Booking', secondary=booking_anag_slot, back_populates='slots')
+
+class Message(Base):
+    __tablename__ = 'messages'
+    id_message = Column(Integer, primary_key=True)
+    id_sender = Column(Integer, ForeignKey('users.id'), nullable=False)
+    id_receiver = Column(Integer, ForeignKey('users.id'), nullable=False)
+    text = Column(String, nullable=False)
+    send_datetime = Column(DateTime, nullable=False)
+    is_read = Column(Boolean, nullable=False)
