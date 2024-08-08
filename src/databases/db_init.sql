@@ -69,22 +69,31 @@ CREATE TABLE IF NOT EXISTS "booking_slot" (
 );
 
 
+CREATE TABLE IF NOT EXISTS "messages" (
+	"id_message" bigint GENERATED ALWAYS AS IDENTITY NOT NULL UNIQUE,
+	"id_sender" bigint NOT NULL,
+	"id_receiver" bigint NOT NULL,
+	"text" text NOT NULL,
+	"send_datetime" timestamp with time zone NOT NULL,
+	"is_read" boolean NOT NULL,
+	PRIMARY KEY ("id_message")
+);
+
+ALTER TABLE "messages" ADD CONSTRAINT "messages_fk1" FOREIGN KEY ("id_sender") REFERENCES "users"("id");
+ALTER TABLE "messages" ADD CONSTRAINT "messages_fk2" FOREIGN KEY ("id_receiver") REFERENCES "users"("id");
 
 ALTER TABLE "student" ADD CONSTRAINT "student_fk0" FOREIGN KEY ("id") REFERENCES "users"("id");
-
 ALTER TABLE "student" ADD CONSTRAINT "student_fk1" FOREIGN KEY ("id_school_grade") REFERENCES "school_grade"("id_school_grade");
+
 ALTER TABLE "teacher" ADD CONSTRAINT "teacher_fk0" FOREIGN KEY ("id") REFERENCES "users"("id");
 
 ALTER TABLE "booking" ADD CONSTRAINT "booking_fk1" FOREIGN KEY ("id_student") REFERENCES "student"("id");
-
 ALTER TABLE "booking" ADD CONSTRAINT "booking_fk2" FOREIGN KEY ("id_teacher") REFERENCES "teacher"("id");
-
 ALTER TABLE "booking" ADD CONSTRAINT "booking_fk3" FOREIGN KEY ("id_school_grade") REFERENCES "school_grade"("id_school_grade");
-
 ALTER TABLE "booking" ADD CONSTRAINT "booking_fk4" FOREIGN KEY ("id_subject") REFERENCES "subjects"("id_subject");
+
 ALTER TABLE "teacher_school_subject" ADD CONSTRAINT "teacher_school_subject_fk0" FOREIGN KEY ("id") REFERENCES "teacher"("id");
-
 ALTER TABLE "teacher_school_subject" ADD CONSTRAINT "teacher_school_subject_fk1" FOREIGN KEY ("id_school_grade") REFERENCES "school_grade"("id_school_grade");
-
 ALTER TABLE "teacher_school_subject" ADD CONSTRAINT "teacher_school_subject_fk2" FOREIGN KEY ("id_subject") REFERENCES "subjects"("id_subject");
+
 ALTER TABLE "chief" ADD CONSTRAINT "chief_fk0" FOREIGN KEY ("id") REFERENCES "users"("id");
