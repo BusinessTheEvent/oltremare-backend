@@ -99,3 +99,10 @@ class StudentInfoResponse(BaseModel):
 class TeacherInfoResponse(BaseModel):
     user: User
     subjects: list[SubjectSchema]
+
+class MessageResponse(BaseModel):
+    id_message: int
+    sender: User
+    receiver: User
+    text: str
+    send_datetime: datetime.datetime

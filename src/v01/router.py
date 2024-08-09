@@ -2,10 +2,10 @@ from decimal import Decimal
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session, joinedload
 from src.auth.models import User
-from src.v01.models import Booking, Teacher, TeacherSchoolSubject, Subject, SchoolGrade, AnagSlot, Student
+from src.v01.models import Booking, Message, Teacher, TeacherSchoolSubject, Subject, SchoolGrade, AnagSlot, Student
 from src.databases.db import get_db
 from src.default_logger import get_custom_logger
-from src.schemas.v01_schemas import CreateBookingSchema, BookingSchema, FullCalendarBookingSchema, IdSchema, StudentInfoResponse, TeacherInfoResponse, SubjectSchema, UpdateUserSchema, UpdateStudentSchema, UpdateTeacherSchema
+from src.schemas.v01_schemas import CreateBookingSchema, BookingSchema, FullCalendarBookingSchema, IdSchema, MessageResponse, StudentInfoResponse, TeacherInfoResponse, SubjectSchema, UpdateUserSchema, UpdateStudentSchema, UpdateTeacherSchema
 from fastapi import HTTPException
 from sqlalchemy import extract, or_
 from src.config import settings
@@ -416,9 +416,21 @@ def get_bookings_by_user_fullCalendar(id_user: IdSchema, db: Session = Depends(g
         
     return result
 
-#TODO: valutare se fare una query per ottenere il prezzo finale delle prentoazione mensili di un insegnante/studente 
+#ottenere i messaggi di un utente dove è il ricevente
+@router.get("/users/inbox/{id_user}", response_model=list[MessageResponse])
+def get_inbox(id_user: int, db: Session = Depends(get_db))->list[MessageResponse]:
+
+    ## TODO: check with auth that user is the receiver
+
+    messages = db.query(Message).filter(Message.id_receiver == id_user, Message.is_read == False).all()
+    return messages
 
 @router.get("/test")
 def test(db: Session = Depends(get_db)):
+
+    utils.send_message(27, 26, "test1", db)
+    utils.send_message(27, 26, "test2", db)
+    utils.send_message(27, 26, "test3", db)
+    utils.send_message(27, 26, "test4", db)
 
     return True

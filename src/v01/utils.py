@@ -6,7 +6,7 @@ from sqlalchemy import text
 from src.auth.models import User
 from src.databases.db import get_db
 from src.schemas.v01_schemas import CreateBookingSchema, UpdateUserSchema, TeacherSchoolSubjectSchema
-from src.v01.models import Subject, Student
+from src.v01.models import Message, Subject, Student
 from src.default_logger import get_custom_logger
 
 logger = get_custom_logger(__name__)
@@ -113,6 +113,28 @@ def update_user(user_id: int, user_new: UpdateUserSchema, db: Session = Depends(
     db.add(user)
     db.commit()
     return user
+
+#send message from user to user
+def send_message(sender_id: int, receiver_id: int, message: str, db: Session = Depends(get_db)):
+  try:
+    logger.info(f"Sending message from user {sender_id} to user {receiver_id}")
+    
+    new_message = Message(
+      id_sender=sender_id,
+      id_receiver=receiver_id,
+      text=message,
+      send_datetime=datetime.datetime.now(),
+      is_read=False
+    )
+
+    db.add(new_message)
+    db.commit()
+  except:
+    logger.error(f"Error with sending message from user {sender_id} to user {receiver_id}")
+    raise HTTPException(status_code=500, detail="Error with sending message")
+
+  return True
+
 
 # #update delle materie che insegna e a che livello di scuola un insegnante
 # def update_teacher_school_subject(teacher_id: int, teacher_new: TeacherSchoolSubjectSchema, db: Session = Depends(get_db)):

@@ -152,3 +152,6 @@ class Message(Base):
     text = Column(String, nullable=False)
     send_datetime = Column(DateTime, nullable=False)
     is_read = Column(Boolean, nullable=False)
+
+    sender = relationship('User', foreign_keys=[id_sender])
+    receiver = relationship('User', foreign_keys=[id_receiver])
