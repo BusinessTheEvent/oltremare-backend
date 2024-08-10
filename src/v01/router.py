@@ -311,7 +311,6 @@ def update_booking(id_booking: int, booking: CreateBookingSchema, db: Session = 
     db.add(booking)
     db.commit()
 
-#accessibile solo da admin e insegnante
 #rimozione di una prenotazione
 @router.delete("/booking/{id_booking}")
 def delete_booking(id_booking: int, db: Session = Depends(get_db)):
@@ -323,6 +322,14 @@ def delete_booking(id_booking: int, db: Session = Depends(get_db)):
     elif booking.start_datetime < today + datetime.timedelta(hours=72):
         raise HTTPException(status_code=400, detail="Cannot delete bookings before 72 hours from the start date")
     
+    teacher = db.query(User).filter(User.id == booking.id_teacher).first()
+    student = db.query(User).filter(User.id == booking.id_student).first()
+
+    # Send message to teacher
+    utils.send_message(teacher.id, student.id, f"Dear {student.name}, your booking with ID {booking.id_booking} has been cancelled.", db)
+    # Send message to student
+    utils.send_message(student.id, teacher.id, f"Dear {teacher.name}, your booking with ID {booking.id_booking} has been cancelled.", db)
+
     db.delete(booking)
 
     ## TODO: implement on cascade?
