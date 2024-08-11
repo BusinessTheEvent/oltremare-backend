@@ -106,3 +106,11 @@ class MessageResponse(BaseModel):
     receiver: User
     text: str
     send_datetime: datetime.datetime
+
+class CreateUserSchema(BaseModel):
+    surname: str
+    email: str
+    name: str
+    password: str
+    school: str
+    type: str

@@ -1,18 +1,20 @@
 from decimal import Decimal
+from typing import Annotated
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session, joinedload
 from src.auth.models import User
+from src.auth.security import get_current_active_user, get_password_hash
 from src.v01.models import Booking, Message, Teacher, TeacherSchoolSubject, Subject, SchoolGrade, AnagSlot, Student
 from src.databases.db import get_db
 from src.default_logger import get_custom_logger
-from src.schemas.v01_schemas import CreateBookingSchema, BookingSchema, FullCalendarBookingSchema, IdSchema, MessageResponse, StudentInfoResponse, TeacherInfoResponse, SubjectSchema, UpdateUserSchema, UpdateStudentSchema, UpdateTeacherSchema
+from src.schemas.v01_schemas import CreateBookingSchema, CreateUserSchema, BookingSchema, FullCalendarBookingSchema, IdSchema, MessageResponse, StudentInfoResponse, TeacherInfoResponse, SubjectSchema, UpdateUserSchema, UpdateStudentSchema, UpdateTeacherSchema
 from fastapi import HTTPException
 from sqlalchemy import extract, or_
 from src.config import settings
 import datetime
 from src.v01 import utils
 from sqlalchemy.exc import IntegrityError
-
+from src.schemas import authentication_schemas as auth
 from src.default_logger import get_custom_logger
 from fastapi import HTTPException
 
@@ -29,6 +31,40 @@ SCHOOL_GRADES_DICT_REVERSE = {1: 'Elementari', 2: 'Medie', 3: 'Superiori'}
 
 router = APIRouter()
 logger = get_custom_logger(__name__)
+
+@router.put("/users/register")
+def register_user(user: CreateUserSchema, db: Session = Depends(get_db)):
+    # Create a new user
+    new_user = User(
+        username=user.email,
+        name=user.name,
+        surname=user.surname,
+        birthdate=datetime.datetime.now(),
+        is_active=True,
+        disabled=False,
+        additional_scopes="",
+        role="",
+        groups=[],
+        is_application=False,
+        password=get_password_hash(user.password)
+    )
+
+    db.add(new_user)
+
+    if user.type == "student":
+        new_student = Student(user=new_user, id_school_grade=SCHOOL_GRADES_DICT[user.school], preliminary_meeting=False)
+        db.add(new_student)
+    
+    elif user.type == "teacher":
+        new_teacher = Teacher(user=new_user)
+        db.add(new_teacher)
+
+    else:
+        raise HTTPException(status_code=400, detail="Invalid user type")
+    
+    db.commit()
+
+    return
 
 @router.get("/")
 def healtcheck():
