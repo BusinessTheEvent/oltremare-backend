@@ -442,6 +442,21 @@ def get_inbox(id_user: int, db: Session = Depends(get_db))->list[MessageResponse
     messages = db.query(Message).filter(Message.id_receiver == id_user, Message.is_read == False).all()
     return messages
 
+#update messaggio come letto
+@router.patch("/message/update/{id_message}")
+def update_message(id_message: int, db: Session = Depends(get_db)):
+    message = db.query(Message).filter(Message.id_message == id_message).first()
+
+    if message is None:
+        raise HTTPException(status_code=404, detail="Message not found")
+    
+    message.is_read = True
+
+    db.add(message)
+    db.commit()
+
+    return {"message": "Message updated successfully"}
+
 @router.get("/test")
 def test(db: Session = Depends(get_db)):
 
