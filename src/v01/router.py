@@ -277,6 +277,16 @@ def create_booking(booking_new: CreateBookingSchema , db: Session = Depends(get_
 
         db.commit()
 
+        
+        student = db.query(User).filter(User.id == booking_new.id_student).first()
+        teacher = db.query(User).filter(User.id == booking_new.id_teacher).first()
+
+        message_to_student = f"Dear {student.name}, your booking on {booking_new.start_datetime.date()}  at {booking_new.start_datetime.time()} has been successfully created."
+        utils.send_message(teacher.id,student.id, message_to_student, db)
+        
+        message_to_teacher = f"Dear {teacher.name}, your booking on {booking_new.start_datetime.date()} at {booking_new.start_datetime.time()} has been successfully created."
+        utils.send_message(student.id,teacher.id, message_to_teacher, db)
+
     except IntegrityError as e:
         db.rollback()
         logger.error(f"Error inserting booking, booking already exists: {e}")
@@ -326,9 +336,9 @@ def delete_booking(id_booking: int, db: Session = Depends(get_db)):
     student = db.query(User).filter(User.id == booking.id_student).first()
 
     # Send message to teacher
-    utils.send_message(teacher.id, student.id, f"Dear {student.name}, your booking with ID {booking.id_booking} has been cancelled.", db)
+    utils.send_message(teacher.id, student.id, f"Dear {student.name}, your booking on {booking.start_datetime.date()} at {booking.start_datetime.time()} has been cancelled.", db)
     # Send message to student
-    utils.send_message(student.id, teacher.id, f"Dear {teacher.name}, your booking with ID {booking.id_booking} has been cancelled.", db)
+    utils.send_message(student.id, teacher.id, f"Dear {teacher.name}, your booking on {booking.start_datetime.date()} at {booking.start_datetime.time()} has been cancelled.", db)
 
     db.delete(booking)
 
