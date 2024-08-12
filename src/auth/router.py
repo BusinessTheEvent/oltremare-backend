@@ -109,8 +109,8 @@ def logout():
 
     if settings.USE_COOKIES_AUTH:
         response = JSONResponse(content={"message": "Logged out"})
-        response.set_cookie(key="auth_token", value=f"Searching for something here?", httponly=True, expires=settings.ACCESS_TOKEN_EXPIRE_NOW*60, path="/")
-        #response.delete_cookie(key="auth_token", path="/")
+        #response.set_cookie(key="auth_token", value=f"Searching for something here?", httponly=True, expires=settings.ACCESS_TOKEN_EXPIRE_NOW*60, path="/")
+        response.delete_cookie(key="auth_token", path="/")
         return response
     else:
         raise HTTPException(status_code=status.HTTP_501_NOT_IMPLEMENTED, detail="Not implemented, yet.")
