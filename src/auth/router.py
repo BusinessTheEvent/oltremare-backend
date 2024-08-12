@@ -41,7 +41,7 @@ def register(user_data: authentication_schemas.UserRegister, db: Annotated[Sessi
             is_active=user_data.is_active,
             disabled=user_data.disabled,
             additional_scopes=user_data.additional_scopes,
-            registered_at=datetime.datetime.now(),
+            registered_at=datetime.datetime.now().date(),
             is_application=user_data.is_application
         )
 
@@ -95,8 +95,8 @@ def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()], db: Annota
         )
 
         if settings.USE_COOKIES_AUTH:
-            response =JSONResponse(content={"message": "Logged in"})
-            response.set_cookie(key="auth_token", value=f"Bearer {access_token}", httponly=True, max_age=settings.ACCESS_TOKEN_EXPIRE_MINUTES*60, expires=settings.ACCESS_TOKEN_EXPIRE_MINUTES*60, path="/")
+            response =JSONResponse(status_code=status.HTTP_200_OK, content={"auth_token": access_token, "token_type": "bearer"})
+            response.set_cookie(key="auth_token", value=f"Bearer {access_token}", httponly=True, max_age=settings.ACCESS_TOKEN_EXPIRE_MINUTES, expires=settings.ACCESS_TOKEN_EXPIRE_MINUTES, path="/", samesite="none", secure=True)
             return response
         
         return {"auth_token": access_token, "token_type": "bearer"}
@@ -116,12 +116,11 @@ def logout():
         raise HTTPException(status_code=status.HTTP_501_NOT_IMPLEMENTED, detail="Not implemented, yet.")
     
 
-@router.get("/me", response_model=authentication_schemas.UserResponse, tags=["User management"])
-def read_users_me(request: Request, current_user: Annotated[authentication_schemas.UserBase, Depends(get_current_active_user)], db: Annotated[Session, Depends(get_db)]) -> Union[authentication_schemas.UserResponse, HTTPException]:
+@router.get("/me", tags=["User management"])
+def read_users_me(current_user: Annotated[authentication_schemas.UserBase, Depends(get_current_active_user)], db: Annotated[Session, Depends(get_db)]):
     
-    pprint.pprint(request.cookies.get("access_token"))
     current_user = db.query(User).filter(User.username == current_user.username).first()
-    
+
     return current_user
 
 

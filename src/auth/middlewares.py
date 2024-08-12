@@ -10,7 +10,7 @@ class AuthCookieMiddleware(BaseHTTPMiddleware):
         if scope['type'] == 'http':
             request = Request(scope, receive=receive)
             auth_token = request.cookies.get("auth_token")
-
+            
             if auth_token:
                 ## NOTE: 'authorization' must be all lowercase to work
                 scope['headers'].append((b'authorization', f'{auth_token}'.encode()))

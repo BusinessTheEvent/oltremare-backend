@@ -32,7 +32,10 @@ app = FastAPI(debug=True, version="1.0.3", title="FastAPI authentication core", 
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Adjust this to your needs
+    allow_origins=[
+            "http://localhost:4321",
+            "http://127.0.0.1:8000"
+        ],  # Adjust this to your needs
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

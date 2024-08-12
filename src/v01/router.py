@@ -1,6 +1,6 @@
 from decimal import Decimal
 from typing import Annotated
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Request
 from sqlalchemy.orm import Session, joinedload
 from src.auth.models import User
 from src.auth.security import get_current_active_user, get_password_hash
@@ -43,7 +43,7 @@ def register_user(user: CreateUserSchema, db: Session = Depends(get_db)):
         is_active=True,
         disabled=False,
         additional_scopes="",
-        role="",
+        role=2,
         groups=[],
         is_application=False,
         password=get_password_hash(user.password)
@@ -476,6 +476,9 @@ def get_inbox(id_user: int, db: Session = Depends(get_db))->list[MessageResponse
     ## TODO: check with auth that user is the receiver
 
     messages = db.query(Message).filter(Message.id_receiver == id_user, Message.is_read == False).all()
+    if messages is None:
+        return []
+    
     return messages
 
 #update messaggio come letto
