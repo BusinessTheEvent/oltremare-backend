@@ -7,7 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import inspect, text
 from src.config import settings
 import os
-from src.databases.db import create_all, engine_internal, get_db, init_roles_table, init_users_table, init_tables_with_file
+from src.databases.db import create_all, engine_internal, get_db, init_tables_with_file
 from src.default_logger import get_custom_logger
 from src.v01.router import router as v01_router
 from sqlalchemy.orm import Session

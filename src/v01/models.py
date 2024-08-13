@@ -128,7 +128,7 @@ class Chief(Base):
 #     attended: bool
 #     insert_id_user: int
 #     insert_date: Date
-#     insert_time: Time
+#     insert_Truetime: Time
 
 #     def __init__(self, booking: Booking):
 #         super().__init__(id=booking.id_booking, from_hour=booking.start_datetime.time(), to_hour=booking.end_datetime.time())

@@ -38,35 +38,6 @@ def create_all():
 def init_users_table(model):
     pass
 
-def init_roles_table(role_model):
-    ## TODO: find a way to import data from configs
-    roles = [
-        {
-            "name": "GUEST",
-            "scopes": ""
-        },
-        {
-            "name": "USER",
-            "scopes": "dashboard:read settings:read docs:read profile:read"
-        },
-        {
-            "name": "STAFF",
-            "scopes": "dashboard:read settings:read settings:write docs:read docs:write profile:read"
-        },
-        {
-            "name": "ADMIN",
-            "scopes": "dashboard:read settings:read settings:write docs:read docs:write docs:delete profile:read profile:write users:read users:write users:delete roles:read roles:write roles:delete"
-        }
-    ]
-    
-    with Session(engine_internal) as db:
-        for role in roles:
-            db_role = role_model(**role)
-            db.add(db_role)
-            if settings.DEBUG:
-                logger.debug(f"Role {db_role.name} created")
-        db.commit()
-
 def init_users_table(user_model, role_model, pwd_context):
     """ ## TODO: find a way to import data from configs
     with Session(engine_internal) as db:

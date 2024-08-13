@@ -4,13 +4,13 @@ CREATE TABLE IF NOT EXISTS users (
     "name" VARCHAR,
     "surname" VARCHAR,
     "birthdate" TIMESTAMP,
-    "password" VARCHAR,
-    "is_active" BOOLEAN DEFAULT TRUE,
-    "disabled" BOOLEAN DEFAULT FALSE,
-    "registered_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    "last_login" TIMESTAMP,
-    "date_init_validity" TIMESTAMP,
-    "date_end_validity" TIMESTAMP
+    "password" VARCHAR
+);
+
+CREATE TABLE IF NOT EXISTS user_session (
+    "id" TEXT PRIMARY KEY,
+    "expires_at" TIMESTAMPTZ NOT NULL,
+    "user_id" INTEGER NOT NULL REFERENCES users(id)
 );
 
 CREATE TABLE IF NOT EXISTS "school_grade" (
