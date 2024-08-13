@@ -3,9 +3,8 @@ import datetime
 from fastapi import Depends, HTTPException
 from pytest import Session
 from sqlalchemy import text
-from src.auth.models import User
 from src.databases.db import get_db
-from src.schemas.v01_schemas import CreateBookingSchema, UpdateUserSchema, TeacherSchoolSubjectSchema
+from src.schemas.v01_schemas import CreateBookingSchema, UpdateUserSchema, TeacherSchoolSubjectSchema, User
 from src.v01.models import Message, Subject, Student
 from src.default_logger import get_custom_logger
 

@@ -1,10 +1,8 @@
 from decimal import Decimal
 from typing import Annotated
 from fastapi import APIRouter, Depends, Request
-from sqlalchemy.orm import Session, joinedload
-from src.auth.models import User
-from src.auth.security import get_current_active_user, get_password_hash
-from src.v01.models import Booking, Message, Teacher, TeacherSchoolSubject, Subject, SchoolGrade, AnagSlot, Student
+from sqlalchemy.orm import Session
+from src.v01.models import Booking, Message, Teacher, TeacherSchoolSubject, Subject, SchoolGrade, AnagSlot, Student, User
 from src.databases.db import get_db
 from src.default_logger import get_custom_logger
 from src.schemas.v01_schemas import CreateBookingSchema, CreateUserSchema, BookingSchema, FullCalendarBookingSchema, IdSchema, MessageResponse, StudentInfoResponse, TeacherInfoResponse, SubjectSchema, UpdateUserSchema, UpdateStudentSchema, UpdateTeacherSchema
@@ -46,7 +44,7 @@ def register_user(user: CreateUserSchema, db: Session = Depends(get_db)):
         role=2,
         groups=[],
         is_application=False,
-        password=get_password_hash(user.password)
+        password=(user.password) ## TODO: hash password
     )
 
     db.add(new_user)

@@ -5,16 +5,12 @@ from fastapi.security import OAuth2PasswordBearer
 from passlib.context import CryptContext
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import inspect, text
-from src.auth.models import Role, User
 from src.config import settings
-from src.auth.models import User
 import os
 from src.databases.db import create_all, engine_internal, get_db, init_roles_table, init_users_table, init_tables_with_file
 from src.default_logger import get_custom_logger
-from src.auth.router import router as auth_router
 from src.v01.router import router as v01_router
 from sqlalchemy.orm import Session
-from src.auth.middlewares import AuthCookieMiddleware
 
 logger = get_custom_logger(__name__)
 
@@ -41,13 +37,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
-if settings.USE_COOKIES_AUTH:
-    app.add_middleware(AuthCookieMiddleware)
-
 print("Using cookies for authentication: ", settings.USE_COOKIES_AUTH)
 
-app.include_router(auth_router, prefix="/auth")
 app.include_router(v01_router, prefix="/v01", tags=["v01"])
 
 
@@ -145,12 +136,7 @@ def db_start():
                 logger.info(f"Filling empty tables ({empty_tables}) with default data from configuration.")
 
                 for table in empty_tables:
-                    if table == "roles":
-                        init_roles_table(Role)
-                    elif table == "users":
-                        init_users_table(User, Role, pwd_context)
-                    else:
-                        logger.info(f"Table <{table}> does not need to be initialized.")
+                    logger.info(f"Table <{table}> does not need to be initialized.")
             else:
                 logger.info("Tables will not be initialized as environments tell.")
 

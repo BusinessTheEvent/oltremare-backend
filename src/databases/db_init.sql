@@ -1,6 +1,16 @@
-CREATE TABLE IF NOT EXISTS "users" (
-	"id" bigint GENERATED ALWAYS AS IDENTITY NOT NULL UNIQUE,
-	PRIMARY KEY ("id")
+CREATE TABLE IF NOT EXISTS users (
+    "id" INTEGER PRIMARY KEY ,
+    "username" VARCHAR UNIQUE,
+    "name" VARCHAR,
+    "surname" VARCHAR,
+    "birthdate" TIMESTAMP,
+    "password" VARCHAR,
+    "is_active" BOOLEAN DEFAULT TRUE,
+    "disabled" BOOLEAN DEFAULT FALSE,
+    "registered_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    "last_login" TIMESTAMP,
+    "date_init_validity" TIMESTAMP,
+    "date_end_validity" TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS "school_grade" (

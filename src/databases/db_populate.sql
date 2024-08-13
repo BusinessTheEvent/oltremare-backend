@@ -1,17 +1,3 @@
--- Inserimento dati nella tabella groups
-INSERT INTO public.groups (name, scopes) VALUES 
-('Group 1', 'Scope 1'),
-('Group 2', 'Scope 2'),
-('Group 3', 'Scope 3'),
-('Group 4', 'Scope 4');
-
--- Inserimento dati nella tabella roles
-INSERT INTO public.roles (name, scopes) VALUES 
-('Role 1', 'Scope 1'),
-('Role 2', 'Scope 2'),
-('Role 3', 'Scope 3'),
-('Role 4', 'Scope 4');
-
 -- Inserimento dati nella tabella school_grade
 INSERT INTO public.school_grade (grade, price) VALUES 
 ('Elementari', 15.00),
@@ -66,52 +52,52 @@ INSERT INTO public.subjects (name) VALUES
 -- ('Astronomia');
 
 -- Inserimento dati nella tabella users
-INSERT INTO public.users (username, name, surname, birthdate, password, is_active, disabled, additional_scopes, role_id, registered_at, last_login, is_application, date_init_validity, date_end_validity) 
+INSERT INTO public.users (username, name, surname, birthdate, password, is_active, disabled, registered_at, last_login, date_init_validity, date_end_validity) 
 VALUES 
 -- Utenti che sono insegnanti (teacher)
 
 -- Insegnanti di lingue
-('Federica.M@gmail.com', 'Federica', 'M', '1990-01-01', 'password1', true, false, 'scope1', 1, '2024-07-01 10:00:00', '2024-07-10 10:00:00', false, '2024-07-01 10:00:00', '2024-12-31 23:59:59'),
-('Giorgia.M@gmail.com', 'Giorgia', 'M', '1985-02-02', 'password2', true, false, 'scope2', 2, '2024-07-02 11:00:00', '2024-07-11 11:00:00', false, '2024-07-02 11:00:00', '2024-12-31 23:59:59'),
-('Giogia.Q@gmail.com', 'Giorgia', 'Q', '1978-03-03', 'password3', true, false, 'scope3', 3, '2024-07-03 12:00:00', '2024-07-12 12:00:00', false, '2024-07-03 12:00:00', '2024-12-31 23:59:59'),
+('Federica.M@gmail.com', 'Federica', 'M', '1990-01-01', 'password1', true, false, '2024-07-01 10:00:00', '2024-07-10 10:00:00', '2024-07-01 10:00:00', '2024-12-31 23:59:59'),
+('Giorgia.M@gmail.com', 'Giorgia', 'M', '1985-02-02', 'password2', true, false, '2024-07-02 11:00:00', '2024-07-11 11:00:00', '2024-07-02 11:00:00', '2024-12-31 23:59:59'),
+('Giogia.Q@gmail.com', 'Giorgia', 'Q', '1978-03-03', 'password3', true, false, '2024-07-03 12:00:00', '2024-07-12 12:00:00', '2024-07-03 12:00:00', '2024-12-31 23:59:59'),
 -- Insegnanti di matematica e fisica superiori
-('Marco.C@gmail.com', 'Marco', 'C', '1978-03-03', 'password4', true, false, 'scope3', 3, '2024-07-03 12:00:00', '2024-07-12 12:00:00', false, '2024-07-03 12:00:00', '2024-12-31 23:59:59'),
-('Ilaria@gmail.com', 'Ilaria', 'Ilaria', '1978-03-03', 'password5', true, false, 'scope3', 3, '2024-07-03 12:00:00', '2024-07-12 12:00:00', false, '2024-07-03 12:00:00', '2024-12-31 23:59:59'),
-('Alberto@gmail.com', 'Alberto', 'Alberto', '1978-03-03', 'password6', true, false, 'scope3', 3, '2024-07-03 12:00:00', '2024-07-12 12:00:00', false, '2024-07-03 12:00:00', '2024-12-31 23:59:59'),
-('Riccardo@gmail.com', 'Riccardo', 'Q', '1978-03-03', 'password7', true, false, 'scope3', 3, '2024-07-03 12:00:00', '2024-07-12 12:00:00', false, '2024-07-03 12:00:00', '2024-12-31 23:59:59'),
-('Andrea@gmail.com', 'Andrea', 'Andrea', '1978-03-03', 'password8', true, false, 'scope3', 3, '2024-07-03 12:00:00', '2024-07-12 12:00:00', false, '2024-07-03 12:00:00', '2024-12-31 23:59:59'),
+('Marco.C@gmail.com', 'Marco', 'C', '1978-03-03', 'password4', true, false, '2024-07-03 12:00:00', '2024-07-12 12:00:00', '2024-07-03 12:00:00', '2024-12-31 23:59:59'),
+('Ilaria@gmail.com', 'Ilaria', 'Ilaria', '1978-03-03', 'password5', true, false, '2024-07-03 12:00:00', '2024-07-12 12:00:00', '2024-07-03 12:00:00', '2024-12-31 23:59:59'),
+('Alberto@gmail.com', 'Alberto', 'Alberto', '1978-03-03', 'password6', true, false, '2024-07-03 12:00:00', '2024-07-12 12:00:00', '2024-07-03 12:00:00', '2024-12-31 23:59:59'),
+('Riccardo@gmail.com', 'Riccardo', 'Q', '1978-03-03', 'password7', true, false, '2024-07-03 12:00:00', '2024-07-12 12:00:00', '2024-07-03 12:00:00', '2024-12-31 23:59:59'),
+('Andrea@gmail.com', 'Andrea', 'Andrea', '1978-03-03', 'password8', true, false, '2024-07-03 12:00:00', '2024-07-12 12:00:00', '2024-07-03 12:00:00', '2024-12-31 23:59:59'),
 
 ---Psicologhe aiuto compiti elementari e medie per ragazzi certificati ---
-('Noemi@gmail.com', 'Noemi', 'Noemi', '1978-03-03', 'password9', true, false, 'scope3', 3, '2024-07-03 12:00:00', '2024-07-12 12:00:00', false, '2024-07-03 12:00:00', '2024-12-31 23:59:59'),
-('Giovanna@gmail.com', 'Giovanna', 'Giovanna', '1978-03-03', 'password10', true, false, 'scope3', 3, '2024-07-03 12:00:00', '2024-07-12 12:00:00', false, '2024-07-03 12:00:00', '2024-12-31 23:59:59'),
-('Irene@gmail.com', 'Irene', 'Irene', '1978-03-03', 'password11', true, false, 'scope3', 3, '2024-07-03 12:00:00', '2024-07-12 12:00:00', false, '2024-07-03 12:00:00', '2024-12-31 23:59:59'),
--- ('Marco.C@gmail.com', 'Marco', 'C', '1978-03-03', 'password12', true, false, 'scope3', 3, '2024-07-03 12:00:00', '2024-07-12 12:00:00', false, '2024-07-03 12:00:00', '2024-12-31 23:59:59'),
+('Noemi@gmail.com', 'Noemi', 'Noemi', '1978-03-03', 'password9', true, false, '2024-07-03 12:00:00', '2024-07-12 12:00:00', '2024-07-03 12:00:00', '2024-12-31 23:59:59'),
+('Giovanna@gmail.com', 'Giovanna', 'Giovanna', '1978-03-03', 'password10', true, false, '2024-07-03 12:00:00', '2024-07-12 12:00:00', '2024-07-03 12:00:00', '2024-12-31 23:59:59'),
+('Irene@gmail.com', 'Irene', 'Irene', '1978-03-03', 'password11', true, false, '2024-07-03 12:00:00', '2024-07-12 12:00:00', '2024-07-03 12:00:00', '2024-12-31 23:59:59'),
+-- ('Marco.C@gmail.com', 'Marco', 'C', '1978-03-03', 'password12', true, false, '2024-07-03 12:00:00', '2024-07-12 12:00:00', '2024-07-03 12:00:00', '2024-12-31 23:59:59'),
 
 --- altre materie ---
-('Aroon.Costantino@gmail.com', 'Aroon', 'Costantino', '1978-03-03', 'password13', true, false, 'scope3', 3, '2024-07-03 12:00:00', '2024-07-12 12:00:00', false, '2024-07-03 12:00:00', '2024-12-31 23:59:59'),
-('Elena@gmail.com', 'Elena', 'Elena', '1978-03-03', 'password14', true, false, 'scope3', 3, '2024-07-03 12:00:00', '2024-07-12 12:00:00', false, '2024-07-03 12:00:00', '2024-12-31 23:59:59'),
-('Gaia@gmail.com', 'Gaia', 'Gaia', '1978-03-03', 'password15', true, false, 'scope3', 3, '2024-07-03 12:00:00', '2024-07-12 12:00:00', false, '2024-07-03 12:00:00', '2024-12-31 23:59:59'),
+('Aroon.Costantino@gmail.com', 'Aroon', 'Costantino', '1978-03-03', 'password13', true, false, '2024-07-03 12:00:00', '2024-07-12 12:00:00', '2024-07-03 12:00:00', '2024-12-31 23:59:59'),
+('Elena@gmail.com', 'Elena', 'Elena', '1978-03-03', 'password14', true, false, '2024-07-03 12:00:00', '2024-07-12 12:00:00', '2024-07-03 12:00:00', '2024-12-31 23:59:59'),
+('Gaia@gmail.com', 'Gaia', 'Gaia', '1978-03-03', 'password15', true, false, '2024-07-03 12:00:00', '2024-07-12 12:00:00', '2024-07-03 12:00:00', '2024-12-31 23:59:59'),
 
 --- altre materie ---
-('Aurora.Barban@gmail.com', 'Aurora', 'Barban', '1978-03-03', 'password16', true, false, 'scope3', 3, '2024-07-03 12:00:00', '2024-07-12 12:00:00', false, '2024-07-03 12:00:00', '2024-12-31 23:59:59'),
+('Aurora.Barban@gmail.com', 'Aurora', 'Barban', '1978-03-03', 'password16', true, false, '2024-07-03 12:00:00', '2024-07-12 12:00:00', '2024-07-03 12:00:00', '2024-12-31 23:59:59'),
 
 --- psicologa di formazione per compiti elementari e medie per ragazzi certificati
-('Valeria.Valeria@gmail.com', 'Valeria', 'Valeria', '1978-03-03', 'password17', true, false, 'scope3', 3, '2024-07-03 12:00:00', '2024-07-12 12:00:00', false, '2024-07-03 12:00:00', '2024-12-31 23:59:59'),
+('Valeria.Valeria@gmail.com', 'Valeria', 'Valeria', '1978-03-03', 'password17', true, false, '2024-07-03 12:00:00', '2024-07-12 12:00:00', '2024-07-03 12:00:00', '2024-12-31 23:59:59'),
 
-('Marco.T@gmail.com', 'Marco', 'T', '1978-03-03', 'password18', true, false, 'scope3', 3, '2024-07-03 12:00:00', '2024-07-12 12:00:00', false, '2024-07-03 12:00:00', '2024-12-31 23:59:59'),
+('Marco.T@gmail.com', 'Marco', 'T', '1978-03-03', 'password18', true, false, '2024-07-03 12:00:00', '2024-07-12 12:00:00', '2024-07-03 12:00:00', '2024-12-31 23:59:59'),
 -- Utenti che sono studenti (student)
-('student1', 'Alice', 'Brown', '2005-04-04', 'password19', true, false, 'scope4', 4, '2024-07-04 13:00:00', '2024-07-13 13:00:00', false, '2024-07-04 13:00:00', '2024-12-31 23:59:59'),
-('student2', 'Charlie', 'Davis', '2006-05-05', 'password20', true, false, 'scope4', 4, '2024-07-05 14:00:00', '2024-07-14 14:00:00', false, '2024-07-05 14:00:00', '2024-12-31 23:59:59'),
-('student3', 'Emily', 'Evans', '2007-06-06', 'password21', true, false, 'scope4', 4, '2024-07-06 15:00:00', '2024-07-15 15:00:00', false, '2024-07-06 15:00:00', '2024-12-31 23:59:59'),
-('student4', 'Frank', 'Garcia', '2008-07-07', 'password22', true, false, 'scope4', 4, '2024-07-07 16:00:00', '2024-07-16 16:00:00', false, '2024-07-07 16:00:00', '2024-12-31 23:59:59'),
-('student5', 'Gigio', 'Donnaruma', '2008-07-07', 'password22', true, false, 'scope4', 4, '2024-07-07 16:00:00', '2024-07-16 16:00:00', false, '2024-07-07 16:00:00', '2024-12-31 23:59:59'),
-('student6', 'Alessandro', 'Del Piero', '2008-07-07', 'password22', true, false, 'scope4', 4, '2024-07-07 16:00:00', '2024-07-16 16:00:00', false, '2024-07-07 16:00:00', '2024-12-31 23:59:59'),
-('student7', 'Fabio', 'Cannavaro', '2008-07-07', 'password22', true, false, 'scope4', 4, '2024-07-07 16:00:00', '2024-07-16 16:00:00', false, '2024-07-07 16:00:00', '2024-12-31 23:59:59'),
-('student8', 'Cristiano', 'Ronaldo', '2008-07-07', 'password22', true, false, 'scope4', 4, '2024-07-07 16:00:00', '2024-07-16 16:00:00', false, '2024-07-07 16:00:00', '2024-12-31 23:59:59'),
-('student9', 'Gigi', 'D agostino', '2008-07-07', 'password22', true, false, 'scope4', 4, '2024-07-07 16:00:00', '2024-07-16 16:00:00', false, '2024-07-07 16:00:00', '2024-12-31 23:59:59'),
+('student1', 'Alice', 'Brown', '2005-04-04', 'password19', true, false, '2024-07-04 13:00:00', '2024-07-13 13:00:00', '2024-07-04 13:00:00', '2024-12-31 23:59:59'),
+('student2', 'Charlie', 'Davis', '2006-05-05', 'password20', true, false, '2024-07-05 14:00:00', '2024-07-14 14:00:00', '2024-07-05 14:00:00', '2024-12-31 23:59:59'),
+('student3', 'Emily', 'Evans', '2007-06-06', 'password21', true, false, '2024-07-06 15:00:00', '2024-07-15 15:00:00', '2024-07-06 15:00:00', '2024-12-31 23:59:59'),
+('student4', 'Frank', 'Garcia', '2008-07-07', 'password22', true, false, '2024-07-07 16:00:00', '2024-07-16 16:00:00', '2024-07-07 16:00:00', '2024-12-31 23:59:59'),
+('student5', 'Gigio', 'Donnaruma', '2008-07-07', 'password22', true, false, '2024-07-07 16:00:00', '2024-07-16 16:00:00', '2024-07-07 16:00:00', '2024-12-31 23:59:59'),
+('student6', 'Alessandro', 'Del Piero', '2008-07-07', 'password22', true, false, '2024-07-07 16:00:00', '2024-07-16 16:00:00', '2024-07-07 16:00:00', '2024-12-31 23:59:59'),
+('student7', 'Fabio', 'Cannavaro', '2008-07-07', 'password22', true, false, '2024-07-07 16:00:00', '2024-07-16 16:00:00', '2024-07-07 16:00:00', '2024-12-31 23:59:59'),
+('student8', 'Cristiano', 'Ronaldo', '2008-07-07', 'password22', true, false, '2024-07-07 16:00:00', '2024-07-16 16:00:00', '2024-07-07 16:00:00', '2024-12-31 23:59:59'),
+('student9', 'Gigi', 'D agostino', '2008-07-07', 'password22', true, false, '2024-07-07 16:00:00', '2024-07-16 16:00:00', '2024-07-07 16:00:00', '2024-12-31 23:59:59'),
 
 -- Utente che è chief
-('chief1', 'Martina', 'Lucarda', '1995-08-08', 'password23', true, false, 'scope4', 4, '2024-07-08 17:00:00', '2024-07-18 17:00:00', false, '2024-07-08 17:00:00', '2024-12-31 23:59:59');
+('chief1', 'Martina', 'Lucarda', '1995-08-08', 'password23', true, false, '2024-07-08 17:00:00', '2024-07-18 17:00:00', '2024-07-08 17:00:00', '2024-12-31 23:59:59');
 
 -- Inserimento dati nella tabella student
 INSERT INTO public.student (id, id_school_grade, preliminary_meeting) VALUES 
@@ -371,17 +357,6 @@ INSERT INTO public.teacher_school_subject (id, id_school_grade, id_subject) VALU
 
 (17, 3, 9); -- Marco T insegna latino alle superiori
 
-
--- Inserimento dati nella tabella user_group
-INSERT INTO public.user_group (user_id, group_id) VALUES 
-(1, 1), -- John Doe in Group 1
-(2, 2), -- Jane Smith in Group 2
-(3, 3), -- Robert Johnson in Group 3
-(4, 4), -- Alice Brown in Group 4
-(5, 1), -- Charlie Davis in Group 1
-(6, 2), -- Emily Evans in Group 2
-(7, 3), -- Frank Garcia in Group 3
-(8, 4); -- George Miller in Group 4
 
 -- Inserimento dati nella tabella booking
 -- INSERT INTO public.booking (id_student, id_teacher, id_school_grade, id_subject, start_datetime, end_datetime, duration, notes, attended, insert_id_user, insert_date, insert_time)

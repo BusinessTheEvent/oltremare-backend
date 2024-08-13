@@ -1,7 +1,7 @@
+import datetime
 from decimal import Decimal
 from sqlalchemy import Column, Integer, String, Boolean, Numeric, ForeignKey, DateTime, Date, Time
 from sqlalchemy.orm import relationship
-from src.auth.models import User
 from src.databases.db import Base
 from sqlalchemy import Table
 
@@ -9,6 +9,35 @@ booking_anag_slot = Table('booking_slot', Base.metadata,
     Column('id_booking', Integer, ForeignKey('booking.id_booking'), primary_key=True),
     Column('id_slot', Integer, ForeignKey('anag_slot.id_slot'), primary_key=True)
 )
+
+class User(Base):
+    __tablename__ = "users"
+
+    id = Column(Integer, primary_key=True, index=True)
+    username = Column(String, unique=True, index=True)
+    name = Column(String, unique=False)
+    surname = Column(String, unique=False)
+    birthdate = Column(DateTime, nullable=True)
+    password = Column(String)
+    is_active = Column(Boolean, default=True)
+    disabled = Column(Boolean, default=False)
+    registered_at = Column(DateTime, default=datetime.datetime.now(datetime.UTC).date())
+    last_login = Column(DateTime, nullable=True)
+    date_init_validity = Column(DateTime, nullable=True)
+    date_end_validity = Column(DateTime, nullable=True)
+
+    def __init__(self, **kwargs):
+        self.username = kwargs.get('username')
+        self.name = kwargs.get('name')
+        self.surname = kwargs.get('surname')
+        self.birthdate = kwargs.get('birthdate')
+        self.password = kwargs.get('password')
+        self.is_active = kwargs.get('is_active')
+        self.disabled = kwargs.get('disabled')
+        self.registered_at = kwargs.get('registered_at') if kwargs.get('registered_at') else datetime.datetime.now(datetime.UTC).date()
+        self.date_init_validity = datetime.datetime.now().date()
+        self.date_end_validity = kwargs.get('date_end_validity', None)
+
 
 class SchoolGrade(Base):
     __tablename__ = 'school_grade'
