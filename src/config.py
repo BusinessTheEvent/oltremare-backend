@@ -50,11 +50,9 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_SECONDS: int = 30 ## for testing purposes only
     ACCESS_TOKEN_EXPIRE_NOW: int = 5 # (seconds)
 
-    # SMTP
-    SMTP_HOST: str = "gator3146.hostgator.com"
-    SMTP_PORT: int = 465  # For tls
-    SMTP_SENDER_EMAIL: str = "no-reply@quasiscience.com"
-    SMTP_PASSWORD: SecretStr = ""
+    # EMAILING
+    GOOGLE_TOKEN_PATH: str = ""
+    GOOGLE_CREDENTIALS_PATH: str = ""
 
     # Licenses
     USE_LICENSES: bool = False

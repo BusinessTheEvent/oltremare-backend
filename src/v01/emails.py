@@ -8,9 +8,7 @@ from googleapiclient.errors import HttpError
 from email.message import EmailMessage
 import google.auth
 import jinja2
-
-import dotenv
-dotenv.load_dotenv()
+from src.config import settings
 
 
 # If modifying these scopes, delete the file token.json.
@@ -22,8 +20,8 @@ SCOPES = [
   "https://www.googleapis.com/auth/gmail.send"
 ]
 
-GOOGLE_TOKEN_PATH= os.environ.get("GOOGLE_TOKEN_PATH")
-GOOGLE_CREDENTIALS_PATH= os.environ.get("GOOGLE_CREDENTIALS_PATH")
+GOOGLE_TOKEN_PATH= settings.GOOGLE_TOKEN_PATH
+GOOGLE_CREDENTIALS_PATH= settings.GOOGLE_CREDENTIALS_PATH
 
 
 def authorize():

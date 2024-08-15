@@ -315,10 +315,10 @@ def create_booking(booking_new: CreateBookingSchema , db: Session = Depends(get_
         student = db.query(User).filter(User.id == booking_new.id_student).first()
         teacher = db.query(User).filter(User.id == booking_new.id_teacher).first()
 
-        message_to_student = f"Dear {student.name}, your booking on {booking_new.start_datetime.date()}  at {booking_new.start_datetime.time()} has been successfully created."
+        message_to_student = f"{student.name}, la lezione del giorno {booking_new.start_datetime.date()}  alle {booking_new.start_datetime.time().strftime("%H:%M")} è stata aggiunta."
         utils.send_message(teacher.id,student.id, message_to_student, db)
         
-        message_to_teacher = f"Dear {teacher.name}, your booking on {booking_new.start_datetime.date()} at {booking_new.start_datetime.time()} has been successfully created."
+        message_to_teacher = f"{teacher.name}, la lezione del giorno {booking_new.start_datetime.date()} alle {booking_new.start_datetime.time().strftime("%H:%M")} è stata aggiunta."
         utils.send_message(student.id,teacher.id, message_to_teacher, db)
 
     except IntegrityError as e:
@@ -368,11 +368,11 @@ def delete_booking(id_booking: int, db: Session = Depends(get_db)):
     
     teacher = db.query(User).filter(User.id == booking.id_teacher).first()
     student = db.query(User).filter(User.id == booking.id_student).first()
-
+    
     # Send message to teacher
-    utils.send_message(teacher.id, student.id, f"Dear {student.name}, your booking on {booking.start_datetime.date()} at {booking.start_datetime.time()} has been cancelled.", db)
+    utils.send_message(teacher.id, student.id, f"{student.name}, la lezione del giorno {booking.start_datetime.date()} alle {booking.start_datetime.time().strftime("%H:%M")} è stata cancellata.", db)
     # Send message to student
-    utils.send_message(student.id, teacher.id, f"Dear {teacher.name}, your booking on {booking.start_datetime.date()} at {booking.start_datetime.time()} has been cancelled.", db)
+    utils.send_message(student.id, teacher.id, f"{teacher.name}, la lezione del giorno {booking.start_datetime.date()} alle {booking.start_datetime.time().strftime("%H:%M")} è stata cancellata.", db)
 
     db.delete(booking)
 
