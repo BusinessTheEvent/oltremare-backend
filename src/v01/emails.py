@@ -158,6 +158,6 @@ if __name__ == "__main__":
     ## render custom email template
     with open("email_template.html") as file:
         body_html = file.read()
-    body = jinja2.Template(body_html).render(title="Porca madonna!", text="This is a test email")
+    body = jinja2.Template(body_html).render(title="Title", text="Body")
 
     gmail_send_mail_to(recipient=recipient, subject=subject, body_html=body)
