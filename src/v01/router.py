@@ -173,7 +173,7 @@ def update_teacher_school_subject(teacher_id: int, teacher1: UpdateTeacherSchema
         return {"message": "Teacher subjects updated successfully"}
     
     except Exception as e:
-        print(e)
+        logger.error(e)
         db.rollback()
         raise HTTPException(status_code=500, detail="Error updating teacher subjects")
 
@@ -411,21 +411,19 @@ def get_booking_by_month_per_teacher(month: int, id_teacher: int, db: Session = 
 #get booking by month and year per student
 @router.get("/booking/get_booking_by_month_and_year/student/{month}/{year}/{id_student}", response_model=list[BookingSchema])
 def get_booking_by_month_and_year_per_student(month: int, year: int, id_student: int, db: Session = Depends(get_db))->list[BookingSchema]:
-
-    print(month, year, id_student)
     
     # Query and join to get necessary data
     if month == 0 and year == 0:
-        print("no everything")
+        #print("no everything")
         booking = db.query(Booking).filter(Booking.id_student == id_student).all()
     elif month == 0:
-        print("no month")
+        #print("no month")
         booking = db.query(Booking).filter(extract('year', Booking.start_datetime) == year, Booking.id_student == id_student).all()
     elif year == 0:
-        print("no year")
+        #print("no year")
         booking = db.query(Booking).filter(extract('month', Booking.start_datetime) == month, Booking.id_student == id_student).all()
     else:
-        print("everything")
+        #print("everything")
         booking = db.query(Booking).filter(extract('month', Booking.start_datetime) == month, extract('year', Booking.start_datetime) == year, Booking.id_student == id_student).all()
 
     return booking
@@ -433,8 +431,6 @@ def get_booking_by_month_and_year_per_student(month: int, year: int, id_student:
 #get booking by month and year per teacher
 @router.get("/booking/get_booking_by_month_and_year/teacher/{month}/{year}/{id_teacher}", response_model=list[BookingSchema])
 def get_booking_by_month_and_year_per_teacher(month: int, year: int, id_teacher: int, db: Session = Depends(get_db))->list[BookingSchema]:
-    
-    print(month, year, id_teacher)
 
     # Query and join to get necessary data
     if month == 0 and year == 0:
@@ -453,7 +449,6 @@ def get_booking_by_month_and_year_per_teacher(month: int, year: int, id_teacher:
 def get_bookings_by_user_fullCalendar(id_user: IdSchema, db: Session = Depends(get_db)) -> list[FullCalendarBookingSchema]:
 
     bookings = db.query(Booking).filter(or_(Booking.id_student == id_user.id, Booking.id_teacher == id_user.id )).all()
-    print(bookings)
     result = []
     for booking in bookings:
         event = {
