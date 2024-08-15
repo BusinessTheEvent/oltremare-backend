@@ -56,7 +56,7 @@ INSERT INTO public.users (username, name, surname, birthdate, password, is_activ
 VALUES 
 
 -- Utente che è chief
-('chief1', 'Martina', 'Lucarda', '1995-08-08', 'password23', true, false, '2024-07-08 17:00:00', '2024-07-18 17:00:00', '2024-07-08 17:00:00', '2024-12-31 23:59:59'),
+('chief@gmail.com', 'Martina', 'Lucarda', '1995-08-08', 'password23', true, false, '2024-07-08 17:00:00', '2024-07-18 17:00:00', '2024-07-08 17:00:00', '2024-12-31 23:59:59'),
 
 -- Utenti che sono insegnanti (teacher)
 -- Insegnanti di lingue
