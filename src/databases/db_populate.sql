@@ -54,8 +54,11 @@ INSERT INTO public.subjects (name) VALUES
 -- Inserimento dati nella tabella users
 INSERT INTO public.users (username, name, surname, birthdate, password, is_active, disabled, registered_at, last_login, date_init_validity, date_end_validity) 
 VALUES 
--- Utenti che sono insegnanti (teacher)
 
+-- Utente che è chief
+('chief1', 'Martina', 'Lucarda', '1995-08-08', 'password23', true, false, '2024-07-08 17:00:00', '2024-07-18 17:00:00', '2024-07-08 17:00:00', '2024-12-31 23:59:59'),
+
+-- Utenti che sono insegnanti (teacher)
 -- Insegnanti di lingue
 ('Federica.M@gmail.com', 'Federica', 'M', '1990-01-01', 'password1', true, false, '2024-07-01 10:00:00', '2024-07-10 10:00:00', '2024-07-01 10:00:00', '2024-12-31 23:59:59'),
 ('Giorgia.M@gmail.com', 'Giorgia', 'M', '1985-02-02', 'password2', true, false, '2024-07-02 11:00:00', '2024-07-11 11:00:00', '2024-07-02 11:00:00', '2024-12-31 23:59:59'),
@@ -94,277 +97,265 @@ VALUES
 ('student6', 'Alessandro', 'Del Piero', '2008-07-07', 'password22', true, false, '2024-07-07 16:00:00', '2024-07-16 16:00:00', '2024-07-07 16:00:00', '2024-12-31 23:59:59'),
 ('student7', 'Fabio', 'Cannavaro', '2008-07-07', 'password22', true, false, '2024-07-07 16:00:00', '2024-07-16 16:00:00', '2024-07-07 16:00:00', '2024-12-31 23:59:59'),
 ('student8', 'Cristiano', 'Ronaldo', '2008-07-07', 'password22', true, false, '2024-07-07 16:00:00', '2024-07-16 16:00:00', '2024-07-07 16:00:00', '2024-12-31 23:59:59'),
-('student9', 'Gigi', 'D agostino', '2008-07-07', 'password22', true, false, '2024-07-07 16:00:00', '2024-07-16 16:00:00', '2024-07-07 16:00:00', '2024-12-31 23:59:59'),
-
--- Utente che è chief
-('chief1', 'Martina', 'Lucarda', '1995-08-08', 'password23', true, false, '2024-07-08 17:00:00', '2024-07-18 17:00:00', '2024-07-08 17:00:00', '2024-12-31 23:59:59');
+('student9', 'Gigi', 'D agostino', '2008-07-07', 'password22', true, false, '2024-07-07 16:00:00', '2024-07-16 16:00:00', '2024-07-07 16:00:00', '2024-12-31 23:59:59');
 
 -- Inserimento dati nella tabella student
 INSERT INTO public.student (id, id_school_grade, preliminary_meeting) VALUES 
-(18, 1, true),  -- Alice Brown
-(19, 2, false), -- Charlie Davis
-(20, 3, true),  -- Emily Evans
-(21, 2, false), -- Frank Garcia
-(22, 1, true), -- Gigio Donnaruma
-(23, 2, false), -- Alessandro Del Piero
-(24, 3, false), -- Fabio Cannavaro
-(25, 1, false), -- Cristiano Ronaldo
-(26, 3, true); -- Gigi D agostino
+(19, 1, true),  -- Alice Brown
+(20, 2, false), -- Charlie Davis
+(21, 3, true),  -- Emily Evans
+(22, 2, false), -- Frank Garcia
+(23, 1, true), -- Gigio Donnaruma
+(24, 2, false), -- Alessandro Del Piero
+(25, 3, false), -- Fabio Cannavaro
+(26, 1, false), -- Cristiano Ronaldo
+(27, 3, true); -- Gigi D agostino
 
 -- Inserimento dati nella tabella teacher
 INSERT INTO public.teacher (id) VALUES 
-(1),  -- Federica M
-(2),  -- Giorgia M
-(3),  -- Giorgia Q
-(4),  -- Marco C
-(5),  -- Ilaria
-(6),  -- Alberto
-(7),  -- Riccardo
-(8),  -- Andrea
-(9),  -- Noemi
-(10),  -- Giovanna
-(11),  -- Irene
-(12),  -- Aroon Costantino
-(13),  -- Elena
-(14),  -- Gaia
-(15),  -- Aurora Barban
-(16),  -- Valeria Valeria
-(17);  -- Marco T
+(2),  -- Federica M
+(3),  -- Giorgia M
+(4),  -- Giorgia Q
+(5),  -- Marco C
+(6),  -- Ilaria
+(7),  -- Alberto
+(8),  -- Riccardo
+(9),  -- Andrea
+(10),  -- Noemi
+(11),  -- Giovanna
+(12),  -- Irene
+(13),  -- Aroon Costantino
+(14),  -- Elena
+(15),  -- Gaia
+(16),  -- Aurora Barban
+(17),  -- Valeria Valeria
+(18);  -- Marco T
 
 
 -- Inserimento dati nella tabella chief
 INSERT INTO public.chief (id) VALUES 
-(27); -- George MillerMartina Lucarda
+(1); -- Martina Lucarda
 
 -- Inserimento dati nella tabella teacher_school_subject
 INSERT INTO public.teacher_school_subject (id, id_school_grade, id_subject) VALUES 
-(1, 3, 1), -- Federica M insegna Inglese alle superiori
-(1, 3, 2), -- Federica M insegna spagnolo alle superiori
-(1, 1, 1), -- Federica M insegna Inglese alle elementari
-(1, 1, 4), -- Federica M insegna Matematica alle elementari
-(1, 1, 10), -- Federica M insegna Italiano alle elementari
-(1, 1, 11), -- Federica M insegna Storia alle elementari
-(1, 1, 12), -- Federica M insegna Geografia alle elementari
-(1, 1, 13), -- Federica M insegna Geometria alle elementari
-(1, 1, 14), -- Federica M insegna Scienze alle elementari
-(1, 1, 15), -- Federica M insegna Arte e immagine alle elementari
-(1, 2, 1), -- Federica M insegna Inglese alle medie
-(1, 2, 2), -- Federica M insegna spagnolo alle medie
-(1, 2, 4), -- Federica M insegna Matematica alle medie
-(1, 2, 10), -- Federica M insegna Italiano alle medie
-(1, 2, 11), -- Federica M insegna Storia alle medie
-(1, 2, 12), -- Federica M insegna Geografia alle medie
-(1, 2, 13), -- Federica M insegna Geometria alle medie
-(1, 2, 14), -- Federica M insegna Scienze alle medie
-(1, 2, 15), -- Federica M insegna Arte e immagine alle medie
-(1, 2, 18), -- Federica M insegna tecnologia alle medie
+(2, 3, 1), -- Federica M insegna Inglese alle superiori
+(2, 3, 2), -- Federica M insegna spagnolo alle superiori
+(2, 1, 1), -- Federica M insegna Inglese alle elementari
+(2, 1, 4), -- Federica M insegna Matematica alle elementari
+(2, 1, 10), -- Federica M insegna Italiano alle elementari
+(2, 1, 11), -- Federica M insegna Storia alle elementari
+(2, 1, 12), -- Federica M insegna Geografia alle elementari
+(2, 1, 13), -- Federica M insegna Geometria alle elementari
+(2, 1, 14), -- Federica M insegna Scienze alle elementari
+(2, 1, 15), -- Federica M insegna Arte e immagine alle elementari
+(2, 2, 1), -- Federica M insegna Inglese alle medie
+(2, 2, 2), -- Federica M insegna spagnolo alle medie
+(2, 2, 4), -- Federica M insegna Matematica alle medie
+(2, 2, 10), -- Federica M insegna Italiano alle medie
+(2, 2, 11), -- Federica M insegna Storia alle medie
+(2, 2, 12), -- Federica M insegna Geografia alle medie
+(2, 2, 13), -- Federica M insegna Geometria alle medie
+(2, 2, 14), -- Federica M insegna Scienze alle medie
+(2, 2, 15), -- Federica M insegna Arte e immagine alle medie
+(2, 2, 18), -- Federica M insegna tecnologia alle medie
 
-(2, 3, 1),  -- Giorgia M insegna Inglese alle superiori
-(2, 3, 2),  -- Giorgia M insegna spagnolo alle superiori
-(2, 1, 1),  -- Giorgia M insegna Inglese alle elementari
-(2, 1, 4),  -- Giorgia M insegna Matematica alle elementari
-(2, 1, 10), -- Giorgia M insegna Italiano alle elementari
-(2, 1, 11), -- Giorgia M insegna Storia alle elementari
-(2, 1, 12), -- Giorgia M insegna Geografia alle elementari
-(2, 1, 13), -- Giorgia M insegna Geometria alle elementari
-(2, 1, 14), -- Giorgia M insegna Scienze alle elementari
-(2, 1, 15), -- Giorgia M insegna Arte e immagine alle elementari
-(2, 2, 1),  -- Giorgia M insegna Inglese alle medie
-(2, 2, 2),  -- Giorgia M insegna spagnolo alle medie
-(2, 2, 4),  -- Giorgia M insegna Matematica alle medie
-(2, 2, 10), -- Giorgia M insegna Italiano alle medie
-(2, 2, 11), -- Giorgia M insegna Storia alle medie
-(2, 2, 12), -- Giorgia M insegna Geografia alle medie
-(2, 2, 13), -- Giorgia M insegna Geometria alle medie
-(2, 2, 14), -- Giorgia M insegna Scienze alle medie
-(2, 2, 15), -- Giorgia M insegna Arte e immagine alle medie
-(2, 2, 18), -- Giorgia M insegna tecnologia alle medie
+(3, 3, 1),  -- Giorgia M insegna Inglese alle superiori
+(3, 3, 2),  -- Giorgia M insegna spagnolo alle superiori
+(3, 1, 1),  -- Giorgia M insegna Inglese alle elementari
+(3, 1, 4),  -- Giorgia M insegna Matematica alle elementari
+(3, 1, 10), -- Giorgia M insegna Italiano alle elementari
+(3, 1, 11), -- Giorgia M insegna Storia alle elementari
+(3, 1, 12), -- Giorgia M insegna Geografia alle elementari
+(3, 1, 13), -- Giorgia M insegna Geometria alle elementari
+(3, 1, 14), -- Giorgia M insegna Scienze alle elementari
+(3, 1, 15), -- Giorgia M insegna Arte e immagine alle elementari
+(3, 2, 1),  -- Giorgia M insegna Inglese alle medie
+(3, 2, 2),  -- Giorgia M insegna spagnolo alle medie
+(3, 2, 4),  -- Giorgia M insegna Matematica alle medie
+(3, 2, 10), -- Giorgia M insegna Italiano alle medie
+(3, 2, 11), -- Giorgia M insegna Storia alle medie
+(3, 2, 12), -- Giorgia M insegna Geografia alle medie
+(3, 2, 13), -- Giorgia M insegna Geometria alle medie
+(3, 2, 14), -- Giorgia M insegna Scienze alle medie
+(3, 2, 15), -- Giorgia M insegna Arte e immagine alle medie
+(3, 2, 18), -- Giorgia M insegna tecnologia alle medie
 
-(3, 3, 1),  -- Giorgia Q insegna Inglese alle superiori
-(3, 3, 2),  -- Giorgia Q insegna spagnolo alle superiori
-(3, 2, 1),  -- Giorgia Q insegna Inglese alle medie
-(3, 2, 2),  -- Giorgia Q insegna spagnolo alle medie
-(3, 2, 3),  -- Giorgia Q insegna tedesco alle medie
-(3, 1, 1),  -- Giorgia Q insegna Inglese alle elementari
+(4, 3, 1),  -- Giorgia Q insegna Inglese alle superiori
+(4, 3, 2),  -- Giorgia Q insegna spagnolo alle superiori
+(4, 2, 1),  -- Giorgia Q insegna Inglese alle medie
+(4, 2, 2),  -- Giorgia Q insegna spagnolo alle medie
+(4, 2, 3),  -- Giorgia Q insegna tedesco alle medie
+(4, 1, 1),  -- Giorgia Q insegna Inglese alle elementari
 
-(4, 1, 1),  -- Marco C insegna Inglese alle elementari
-(4, 1, 4),  -- Marco C insegna Matematica alle elementari
-(4, 1, 10), -- Marco C insegna Italiano alle elementari
-(4, 1, 11), -- Marco C insegna Storia alle elementari
-(4, 1, 12), -- Marco C insegna Geografia alle elementari
-(4, 1, 13), -- Marco C insegna Scienze alle elementari
-(4, 1, 15), -- Marco C insegna Arte e immagine alle elementari
-(4, 2, 1),  -- Marco C insegna Inglese alle medie
-(4, 2, 4),  -- Marco C insegna Matematica alle medie
-(4, 2, 10), -- Marco C insegna Italiano alle medie
-(4, 2, 11), -- Marco C insegna Storia alle medie
-(4, 2, 12), -- Marco C insegna Geografia alle medie
-(4, 2, 13), -- Marco C insegna Scienze alle medie
-(4, 2, 15), -- Marco C insegna Arte e immagine alle medie
-(4, 2, 2),  -- Marco C insegna spagnolo alle medie
-(4, 2, 3),  -- Marco C insegna tedesco alle medie
-(4, 2, 17), -- Marco C insegna francese alle medie
-(4, 2, 14), -- Marco C insegna Scienze alle medie
-(4, 2, 18), -- Marco C insegna tecnologia alle medie
-(4, 3, 4),  -- Marco C insegna matematica alle superiori
+(5, 1, 1),  -- Marco C insegna Inglese alle elementari
+(5, 1, 4),  -- Marco C insegna Matematica alle elementari
+(5, 1, 10), -- Marco C insegna Italiano alle elementari
+(5, 1, 11), -- Marco C insegna Storia alle elementari
+(5, 1, 12), -- Marco C insegna Geografia alle elementari
+(5, 1, 13), -- Marco C insegna Scienze alle elementari
+(5, 1, 15), -- Marco C insegna Arte e immagine alle elementari
+(5, 2, 1),  -- Marco C insegna Inglese alle medie
+(5, 2, 4),  -- Marco C insegna Matematica alle medie
+(5, 2, 10), -- Marco C insegna Italiano alle medie
+(5, 2, 11), -- Marco C insegna Storia alle medie
+(5, 2, 12), -- Marco C insegna Geografia alle medie
+(5, 2, 13), -- Marco C insegna Scienze alle medie
+(5, 2, 15), -- Marco C insegna Arte e immagine alle medie
+(5, 2, 2),  -- Marco C insegna spagnolo alle medie
+(5, 2, 3),  -- Marco C insegna tedesco alle medie
+(5, 2, 17), -- Marco C insegna francese alle medie
+(5, 2, 14), -- Marco C insegna Scienze alle medie
+(5, 2, 18), -- Marco C insegna tecnologia alle medie
+(5, 3, 4),  -- Marco C insegna matematica alle superiori
 
-(5, 3, 4), -- Ilaria insegna matematica alle superiori (solo biennio)
-(5, 3, 6), -- Ilaria insegna economia alle superiori
+(6, 3, 4), -- Ilaria insegna matematica alle superiori (solo biennio)
+(6, 3, 6), -- Ilaria insegna economia alle superiori
 
-(6, 3, 4), -- Alberto insegna matematica alle superiori (triennio)
-(6, 3, 5), -- Alberto insegna fisica alle superiori
+(7, 3, 4), -- Alberto insegna matematica alle superiori (triennio)
+(7, 3, 5), -- Alberto insegna fisica alle superiori
 
-(7, 3, 4), -- Riccardo insegna matematica alle superiori
-(7, 3, 5), -- Riccardo insegna fisica alle superiori
+(8, 3, 4), -- Riccardo insegna matematica alle superiori
+(8, 3, 5), -- Riccardo insegna fisica alle superiori
 
-(8, 3, 4), -- Andrea insegna matematica alle superiori
-(8, 3, 5), -- Andrea insegna fisica alle superiori
-(8, 3, 7), -- Andrea insegna chimica alle superiori
+(9, 3, 4), -- Andrea insegna matematica alle superiori
+(9, 3, 5), -- Andrea insegna fisica alle superiori
+(9, 3, 7), -- Andrea insegna chimica alle superiori
 
-(9, 1, 1),  -- Noemi insegna Inglese alle elementari
-(9, 1, 4),  -- Noemi insegna Matematica alle elementari
-(9, 1, 10), -- Noemi insegna Italiano alle elementari
-(9, 1, 11), -- Noemi insegna Storia alle elementari
-(9, 1, 12), -- Noemi insegna Geografia alle elementari
-(9, 1, 13), -- Noemi insegna Scienze alle elementari
-(9, 1, 15), -- Noemi insegna Arte e immagine alle elementari
-(9, 2, 1),  -- Noemi insegna Inglese alle medie
-(9, 2, 4),  -- Noemi insegna Matematica alle medie
-(9, 2, 10), -- Noemi insegna Italiano alle medie
-(9, 2, 11), -- Noemi insegna Storia alle medie
-(9, 2, 12), -- Noemi insegna Geografia alle medie
-(9, 2, 13), -- Noemi insegna Scienze alle medie
-(9, 2, 15), -- Noemi insegna Arte e immagine alle medie
-(9, 2, 2),  -- Noemi insegna spagnolo alle medie
-(9, 2, 3),  -- Noemi insegna tedesco alle medie
-(9, 2, 17), -- Noemi insegna francese alle medie
+(10, 1, 1),  -- Noemi insegna Inglese alle elementari
+(10, 1, 4),  -- Noemi insegna Matematica alle elementari
+(10, 1, 10), -- Noemi insegna Italiano alle elementari
+(10, 1, 11), -- Noemi insegna Storia alle elementari
+(10, 1, 12), -- Noemi insegna Geografia alle elementari
+(10, 1, 13), -- Noemi insegna Scienze alle elementari
+(10, 1, 15), -- Noemi insegna Arte e immagine alle elementari
+(10, 2, 1),  -- Noemi insegna Inglese alle medie
+(10, 2, 4),  -- Noemi insegna Matematica alle medie
+(10, 2, 10), -- Noemi insegna Italiano alle medie
+(10, 2, 11), -- Noemi insegna Storia alle medie
+(10, 2, 12), -- Noemi insegna Geografia alle medie
+(10, 2, 13), -- Noemi insegna Scienze alle medie
+(10, 2, 15), -- Noemi insegna Arte e immagine alle medie
+(10, 2, 2),  -- Noemi insegna spagnolo alle medie
+(10, 2, 3),  -- Noemi insegna tedesco alle medie
+(10, 2, 17), -- Noemi insegna francese alle medie
 
-(10, 1, 1),  -- Giovanna insegna Inglese alle elementari
-(10, 1, 4),  -- Giovanna insegna Matematica alle elementari
-(10, 1, 10), -- Giovanna insegna Italiano alle elementari
-(10, 1, 11), -- Giovanna insegna Storia alle elementari
-(10, 1, 12), -- Giovanna insegna Geografia alle elementari
-(10, 1, 13), -- Giovanna insegna Scienze alle elementari
-(10, 1, 15), -- Giovanna insegna Arte e immagine alle elementari
-(10, 2, 1),  -- Giovanna insegna Inglese alle medie
-(10, 2, 4),  -- Giovanna insegna Matematica alle medie
-(10, 2, 10), -- Giovanna insegna Italiano alle medie
-(10, 2, 11), -- Giovanna insegna Storia alle medie
-(10, 2, 12), -- Giovanna insegna Geografia alle medie
-(10, 2, 13), -- Giovanna insegna Scienze alle medie
-(10, 2, 15), -- Giovanna insegna Arte e immagine alle medie
-(10, 2, 2),  -- Giovanna insegna spagnolo alle medie
-(10, 2, 3),  -- Giovanna insegna tedesco alle medie
-(10, 2, 17), -- Giovanna insegna francese alle medie
+(11, 1, 1),  -- Giovanna insegna Inglese alle elementari
+(11, 1, 4),  -- Giovanna insegna Matematica alle elementari
+(11, 1, 10), -- Giovanna insegna Italiano alle elementari
+(11, 1, 11), -- Giovanna insegna Storia alle elementari
+(11, 1, 12), -- Giovanna insegna Geografia alle elementari
+(11, 1, 13), -- Giovanna insegna Scienze alle elementari
+(11, 1, 15), -- Giovanna insegna Arte e immagine alle elementari
+(11, 2, 1),  -- Giovanna insegna Inglese alle medie
+(11, 2, 4),  -- Giovanna insegna Matematica alle medie
+(11, 2, 10), -- Giovanna insegna Italiano alle medie
+(11, 2, 11), -- Giovanna insegna Storia alle medie
+(11, 2, 12), -- Giovanna insegna Geografia alle medie
+(11, 2, 13), -- Giovanna insegna Scienze alle medie
+(11, 2, 15), -- Giovanna insegna Arte e immagine alle medie
+(11, 2, 2),  -- Giovanna insegna spagnolo alle medie
+(11, 2, 3),  -- Giovanna insegna tedesco alle medie
+(11, 2, 17), -- Giovanna insegna francese alle medie
 
-(11, 1, 1),  -- Irene insegna Inglese alle elementari
-(11, 1, 4),  -- Irene insegna Matematica alle elementari
-(11, 1, 10), -- Irene insegna Italiano alle elementari
-(11, 1, 11), -- Irene insegna Storia alle elementari
-(11, 1, 12), -- Irene insegna Geografia alle elementari
-(11, 1, 13), -- Irene insegna Scienze alle elementari
-(11, 1, 15), -- Irene insegna Arte e immagine alle elementari
-(11, 2, 1),  -- Irene insegna Inglese alle medie
-(11, 2, 4),  -- Irene insegna Matematica alle medie
-(11, 2, 10), -- Irene insegna Italiano alle medie
-(11, 2, 11), -- Irene insegna Storia alle medie
-(11, 2, 12), -- Irene insegna Geografia alle medie
-(11, 2, 13), -- Irene insegna Scienze alle medie
-(11, 2, 15), -- Irene insegna Arte e immagine alle medie
-(11, 2, 2),  -- Irene insegna spagnolo alle medie
-(11, 2, 3),  -- Irene insegna tedesco alle medie
-(11, 2, 17), -- Irene insegna francese alle medie
+(12, 1, 1),  -- Irene insegna Inglese alle elementari
+(12, 1, 4),  -- Irene insegna Matematica alle elementari
+(12, 1, 10), -- Irene insegna Italiano alle elementari
+(12, 1, 11), -- Irene insegna Storia alle elementari
+(12, 1, 12), -- Irene insegna Geografia alle elementari
+(12, 1, 13), -- Irene insegna Scienze alle elementari
+(12, 1, 15), -- Irene insegna Arte e immagine alle elementari
+(12, 2, 1),  -- Irene insegna Inglese alle medie
+(12, 2, 4),  -- Irene insegna Matematica alle medie
+(12, 2, 10), -- Irene insegna Italiano alle medie
+(12, 2, 11), -- Irene insegna Storia alle medie
+(12, 2, 12), -- Irene insegna Geografia alle medie
+(12, 2, 13), -- Irene insegna Scienze alle medie
+(12, 2, 15), -- Irene insegna Arte e immagine alle medie
+(12, 2, 2),  -- Irene insegna spagnolo alle medie
+(12, 2, 3),  -- Irene insegna tedesco alle medie
+(12, 2, 17), -- Irene insegna francese alle medie
 
-(12, 3, 3),  -- Aroon insegna tedesco alle superiori
-(12, 2, 3),  -- Aroon insegna tedesco alle medie
-(12, 3, 8),  -- Aroon insegna diritto alle superiori
-(12, 2, 1),  -- Aroon insegna Inglese alle medie
-(12, 2, 4),  -- Aroon insegna Matematica alle medie
-(12, 2, 10), -- Aroon insegna Italiano alle medie
-(12, 2, 11), -- Aroon insegna Storia alle medie
-(12, 2, 12), -- Aroon insegna Geografia alle medie
-(12, 2, 13), -- Aroon insegna Geometria alle medie
-(12, 2, 14), -- Aroon insegna Scienze alle medie
-(12, 2, 15), -- Aroon insegna Arte e immagine alle medie
-(12, 2, 18), -- Aroon insegna tecnologia alle medie
-
-
-(13, 2, 1),  -- Elena insegna Inglese alle medie
-(13, 2, 4),  -- Elena insegna Matematica alle medie
-(13, 2, 10), -- Elena insegna Italiano alle medie
-(13, 2, 11), -- Elena insegna Storia alle medie
-(13, 2, 12), -- Elena insegna Geografia alle medie
-(13, 2, 13), -- Elena insegna Geometria alle medie
-(13, 2, 14), -- Elena insegna Scienze alle medie
-(13, 2, 15), -- Elena insegna Arte e immagine alle medie
-(13, 2, 18), -- Elena insegna tecnologia alle medie
-(13, 2, 2),  -- Elena insegna spagnolo alle medie
-
-(14, 1, 1),  -- Gaia insegna Inglese alle elementari
-(14, 1, 4),  -- Gaia insegna Matematica alle elementari
-(14, 1, 10), -- Gaia insegna Italiano alle elementari
-(14, 1, 11), -- Gaia insegna Storia alle elementari
-(14, 1, 12), -- Gaia insegna Geografia alle elementari
-(14, 1, 13), -- Gaia insegna Scienze alle elementari
-(14, 1, 15), -- Gaia insegna Arte e immagine alle elementari
-(14, 2, 1),  -- Gaia insegna Inglese alle medie
-(14, 2, 4),  -- Gaia insegna Matematica alle medie
-(14, 2, 10), -- Gaia insegna Italiano alle medie
-(14, 2, 11), -- Gaia insegna Storia alle medie
-(14, 2, 12), -- Gaia insegna Geografia alle medie
-(14, 2, 13), -- Gaia insegna Scienze alle medie
-(14, 2, 15), -- Gaia insegna Arte e immagine alle medie
-(14, 2, 2),  -- Gaia insegna spagnolo alle medie
-(14, 2, 3),  -- Gaia insegna tedesco alle medie
-(14, 2, 17), -- Gaia insegna francese alle medie
-
-(15, 1, 1),  -- Aurora insegna Inglese alle elementari
-(15, 1, 4),  -- Aurora insegna Matematica alle elementari
-(15, 1, 10), -- Aurora insegna Italiano alle elementari
-(15, 1, 11), -- Aurora insegna Storia alle elementari
-(15, 1, 12), -- Aurora insegna Geografia alle elementari
-(15, 1, 13), -- Aurora insegna Scienze alle elementari
-(15, 1, 15), -- Aurora insegna Arte e immagine alle elementari
-(15, 2, 1),  -- Aurora insegna Inglese alle medie
-(15, 2, 4),  -- Aurora insegna Matematica alle medie
-(15, 2, 10), -- Aurora insegna Italiano alle medie
-(15, 2, 11), -- Aurora insegna Storia alle medie
-(15, 2, 12), -- Aurora insegna Geografia alle medie
-(15, 2, 13), -- Aurora insegna Scienze alle medie
-(15, 2, 15), -- Aurora insegna Arte e immagine alle medie
-(15, 2, 14), -- Aurora insegna Scienze alle medie
-(15, 2, 18), -- Aurora insegna tecnologia alle medie
-(15, 3, 6),  -- Aurora insegna economia alle superiori
-
-(16, 1, 1),  -- Valeria insegna Inglese alle elementari
-(16, 1, 4),  -- Valeria insegna Matematica alle elementari
-(16, 1, 10), -- Valeria insegna Italiano alle elementari
-(16, 1, 11), -- Valeria insegna Storia alle elementari
-(16, 1, 12), -- Valeria insegna Geografia alle elementari
-(16, 1, 13), -- Valeria insegna Geometria alle elementari
-(16, 1, 14), -- Valeria insegna Scienze alle elementari
-(16, 1, 15), -- Valeria insegna Arte e immagine alle elementari
-(16, 2, 1),  -- Valeria insegna Inglese alle medie
-(16, 2, 2),  -- Valeria insegna spagnolo alle medie
-(16, 2, 4),  -- Valeria insegna Matematica alle medie
-(16, 2, 10), -- Valeria insegna Italiano alle medie
-(16, 2, 11), -- Valeria insegna Storia alle medie
-(16, 2, 12), -- Valeria insegna Geografia alle medie
-(16, 2, 13), -- Valeria insegna Geometria alle medie
-(16, 2, 14), -- Valeria insegna Scienze alle medie
-(16, 2, 15), -- Valeria insegna Arte e immagine alle medie
-(16, 2, 18), -- Valeria insegna tecnologia alle medie
-
-(17, 3, 9); -- Marco T insegna latino alle superiori
+(13, 3, 3),  -- Aroon insegna tedesco alle superiori
+(13, 2, 3),  -- Aroon insegna tedesco alle medie
+(13, 3, 8),  -- Aroon insegna diritto alle superiori
+(13, 2, 1),  -- Aroon insegna Inglese alle medie
+(13, 2, 4),  -- Aroon insegna Matematica alle medie
+(13, 2, 10), -- Aroon insegna Italiano alle medie
+(13, 2, 11), -- Aroon insegna Storia alle medie
+(13, 2, 12), -- Aroon insegna Geografia alle medie
+(13, 2, 13), -- Aroon insegna Geometria alle medie
+(13, 2, 14), -- Aroon insegna Scienze alle medie
+(13, 2, 15), -- Aroon insegna Arte e immagine alle medie
+(13, 2, 18), -- Aroon insegna tecnologia alle medie
 
 
--- Inserimento dati nella tabella booking
--- INSERT INTO public.booking (id_student, id_teacher, id_school_grade, id_subject, start_datetime, end_datetime, duration, notes, attended, insert_id_user, insert_date, insert_time)
--- VALUES 
--- (4, 1, 1, 1, '2023-01-01 09:00:00+00', '2023-01-01 10:00:00+00', 60, 'First meeting', true, 1, '2023-01-01', '09:00:00'),
--- (5, 1, 1, 2, '2023-01-02 11:00:00+00', '2023-01-02 12:00:00+00', 60, 'Second meeting', false, 1, '2023-01-02', '11:00:00'),
--- (6, 2, 2, 3, '2023-02-01 14:00:00+00', '2023-02-01 15:00:00+00', 60, 'Third meeting', true, 2, '2023-02-01', '14:00:00'),
--- (7, 3, 3, 4, '2023-02-02 16:00:00+00', '2023-02-02 17:00:00+00', 60, 'Fourth meeting', false, 3, '2023-02-02', '16:00:00');
+(14, 2, 1),  -- Elena insegna Inglese alle medie
+(14, 2, 4),  -- Elena insegna Matematica alle medie
+(14, 2, 10), -- Elena insegna Italiano alle medie
+(14, 2, 11), -- Elena insegna Storia alle medie
+(14, 2, 12), -- Elena insegna Geografia alle medie
+(14, 2, 13), -- Elena insegna Geometria alle medie
+(14, 2, 14), -- Elena insegna Scienze alle medie
+(14, 2, 15), -- Elena insegna Arte e immagine alle medie
+(14, 2, 18), -- Elena insegna tecnologia alle medie
+(14, 2, 2),  -- Elena insegna spagnolo alle medie
+
+(15, 1, 1),  -- Gaia insegna Inglese alle elementari
+(15, 1, 4),  -- Gaia insegna Matematica alle elementari
+(15, 1, 10), -- Gaia insegna Italiano alle elementari
+(15, 1, 11), -- Gaia insegna Storia alle elementari
+(15, 1, 12), -- Gaia insegna Geografia alle elementari
+(15, 1, 13), -- Gaia insegna Scienze alle elementari
+(15, 1, 15), -- Gaia insegna Arte e immagine alle elementari
+(15, 2, 1),  -- Gaia insegna Inglese alle medie
+(15, 2, 4),  -- Gaia insegna Matematica alle medie
+(15, 2, 10), -- Gaia insegna Italiano alle medie
+(15, 2, 11), -- Gaia insegna Storia alle medie
+(15, 2, 12), -- Gaia insegna Geografia alle medie
+(15, 2, 13), -- Gaia insegna Scienze alle medie
+(15, 2, 15), -- Gaia insegna Arte e immagine alle medie
+(15, 2, 2),  -- Gaia insegna spagnolo alle medie
+(15, 2, 3),  -- Gaia insegna tedesco alle medie
+(15, 2, 17), -- Gaia insegna francese alle medie
+
+(16, 1, 1),  -- Aurora insegna Inglese alle elementari
+(16, 1, 4),  -- Aurora insegna Matematica alle elementari
+(16, 1, 10), -- Aurora insegna Italiano alle elementari
+(16, 1, 11), -- Aurora insegna Storia alle elementari
+(16, 1, 12), -- Aurora insegna Geografia alle elementari
+(16, 1, 13), -- Aurora insegna Scienze alle elementari
+(16, 1, 15), -- Aurora insegna Arte e immagine alle elementari
+(16, 2, 1),  -- Aurora insegna Inglese alle medie
+(16, 2, 4),  -- Aurora insegna Matematica alle medie
+(16, 2, 10), -- Aurora insegna Italiano alle medie
+(16, 2, 11), -- Aurora insegna Storia alle medie
+(16, 2, 12), -- Aurora insegna Geografia alle medie
+(16, 2, 13), -- Aurora insegna Scienze alle medie
+(16, 2, 15), -- Aurora insegna Arte e immagine alle medie
+(16, 2, 14), -- Aurora insegna Scienze alle medie
+(16, 2, 18), -- Aurora insegna tecnologia alle medie
+(16, 3, 6),  -- Aurora insegna economia alle superiori
+
+(17, 1, 1),  -- Valeria insegna Inglese alle elementari
+(17, 1, 4),  -- Valeria insegna Matematica alle elementari
+(17, 1, 10), -- Valeria insegna Italiano alle elementari
+(17, 1, 11), -- Valeria insegna Storia alle elementari
+(17, 1, 12), -- Valeria insegna Geografia alle elementari
+(17, 1, 13), -- Valeria insegna Geometria alle elementari
+(17, 1, 14), -- Valeria insegna Scienze alle elementari
+(17, 1, 15), -- Valeria insegna Arte e immagine alle elementari
+(17, 2, 1),  -- Valeria insegna Inglese alle medie
+(17, 2, 2),  -- Valeria insegna spagnolo alle medie
+(17, 2, 4),  -- Valeria insegna Matematica alle medie
+(17, 2, 10), -- Valeria insegna Italiano alle medie
+(17, 2, 11), -- Valeria insegna Storia alle medie
+(17, 2, 12), -- Valeria insegna Geografia alle medie
+(17, 2, 13), -- Valeria insegna Geometria alle medie
+(17, 2, 14), -- Valeria insegna Scienze alle medie
+(17, 2, 15), -- Valeria insegna Arte e immagine alle medie
+(17, 2, 18), -- Valeria insegna tecnologia alle medie
+
+(18, 3, 9); -- Marco T insegna latino alle superiori
 
 
 -- Inserimento dati nella tabella anag_slot
@@ -389,50 +380,3 @@ INSERT INTO public.anag_slot (id_slot) VALUES
 (18),
 (19),
 (20);
-
-
-
-
-/* INSERT INTO public.booking
-(id_booking, id_student, id_teacher, id_school_grade, start_datetime, end_datetime, duration, id_subject, notes, attended, insert_id_user, insert_date, insert_time)
-VALUES(1, 4, 1, 2, '2024-07-20 09:00:00', '2024-07-20 10:00:00', 1, 1, 'note', true,  1, '2024-07-18', '23:39:00');
-INSERT INTO booking_slot (id_booking, id_slot) VALUES(1, 1);
-INSERT INTO booking_slot (id_booking, id_slot) VALUES(1, 2);
-
-INSERT INTO public.booking
-(id_booking, id_student, id_teacher, id_school_grade, start_datetime, end_datetime, duration, id_subject, notes, attended, insert_id_user, insert_date, insert_time)
-VALUES(2, 5, 1,  2, '2024-07-20 10:00:00', '2024-07-20 11:00:00', 1, 1, 'note',false, 1, '2024-07-18', '23:39:00');
-INSERT INTO booking_slot (id_booking, id_slot) VALUES(2, 3);
-INSERT INTO booking_slot (id_booking, id_slot) VALUES(2, 4);
-
-INSERT INTO public.booking
-(id_booking, id_student, id_teacher, id_school_grade, start_datetime, end_datetime, duration, id_subject, notes, attended, insert_id_user, insert_date, insert_time)
-VALUES(3, 6, 2, 1, '2024-07-20 10:30:00', '2024-07-20 12:00:00', 2, 1, 'note', true, 1, '2024-07-18', '23:39:00');
-INSERT INTO booking_slot (id_booking, id_slot) VALUES(3, 4);
-INSERT INTO booking_slot (id_booking, id_slot) VALUES(3, 5);
-INSERT INTO booking_slot (id_booking, id_slot) VALUES(3, 6);
-
-INSERT INTO public.booking
-(id_booking, id_student, id_teacher, id_school_grade, start_datetime, end_datetime, duration, id_subject, notes, attended, insert_id_user, insert_date, insert_time)
-VALUES(4, 7, 2, 3, '2024-07-20 12:00:00', '2024-07-20 13:30:00', 2, 1, 'note', true, 1, '2024-07-18', '23:39:00');
-INSERT INTO booking_slot (id_booking, id_slot) VALUES(4, 7);
-INSERT INTO booking_slot (id_booking, id_slot) VALUES(4, 8);
-INSERT INTO booking_slot (id_booking, id_slot) VALUES(4, 9);
-
-INSERT INTO public.booking
-(id_booking, id_student, id_teacher, id_school_grade, start_datetime, end_datetime, duration, id_subject, notes, attended, insert_id_user, insert_date, insert_time)
-VALUES(5, 5, 2,  2, '2024-07-20 13:30:00', '2024-07-20 14:30:00', 3, 1, 'note', true, 1, '2024-07-18', '23:39:00');
-INSERT INTO booking_slot (id_booking, id_slot) VALUES(5, 10);
-INSERT INTO booking_slot (id_booking, id_slot) VALUES(5, 11);
-
-INSERT INTO public.booking
-(id_booking, id_student, id_teacher, id_school_grade, start_datetime, end_datetime, duration, id_subject, notes, attended, insert_id_user, insert_date, insert_time)
-VALUES(6, 6, 3, 1, '2024-07-20 09:00:00', '2024-07-20 10:00:00', 1, 1, 'note', false, 1, '2024-07-18', '23:39:00');
-INSERT INTO booking_slot (id_booking, id_slot) VALUES(6, 1);
-INSERT INTO booking_slot (id_booking, id_slot) VALUES(6, 2);
-
-INSERT INTO public.booking
-(id_booking, id_student, id_teacher, id_school_grade, start_datetime, end_datetime, duration, id_subject, notes, attended, insert_id_user, insert_date, insert_time)
-VALUES(7, 6, 3, 3, '2024-07-20 13:00:00', '2024-07-20 14:00:00', 1, 1, 'note', false, 1, '2024-07-18', '23:39:00');
-INSERT INTO booking_slot (id_booking, id_slot) VALUES(7, 9);
-INSERT INTO booking_slot (id_booking, id_slot) VALUES(7, 10); */
