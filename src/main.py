@@ -24,14 +24,19 @@ ACCESS_TOKEN_DEFAULT_EXPIRE_MINUTES = 30
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
-app = FastAPI(debug=True, version="1.0.3", title="FastAPI authentication core", description="This template provides a robust starting point for implementing authorization in your application. It includes features such as role-based access control, token-based authentication, and user management. The template is designed to be flexible and easy to integrate into existing projects, with clear documentation and modular code. Whether you're building a small application or a large, complex system, this authorization template can help you ensure that your resources are protected and only accessible to authorized users.")
+app = FastAPI(debug=True, version="1.0.3", title="FastAPI oltremare backend", description="")
+
+if not settings.DEBUG and not settings.TESTING:
+    app.docs_url = None
+    app.redoc_url = None
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
+            "http://0.0.0.0:4321",
             "http://localhost:4321",
-            "http://127.0.0.1:8000"
-        ],  # Adjust this to your needs
+            "http://frontend:4321",
+        ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
