@@ -2,12 +2,12 @@ import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import jinja2
-#from src.config import settings
+from src.config import settings
 
 
 def gmail_send_mail_to(recipient: str, subject: str, **kwargs):
-    sender_email ="no-reply@oltremaredoposcuolamira.com" #settings.GMAIL_USER
-    sender_password = "cact svqr zaqi flbs" #settings.GMAIL_PASSWORD
+    sender_email = settings.SENDER_EMAIL
+    sender_password = settings.SENDER_PASSWORD
 
     ## render custom email template
     with open("email_template.html") as file:

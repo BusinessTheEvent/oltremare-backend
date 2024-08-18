@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS "school_grade" (
 
 CREATE TABLE IF NOT EXISTS "student" (
 	"id" bigint NOT NULL,
-	"id_school_grade" bigint NOT NULL,
+	"id_school_grade" bigint default 1 NOT NULL,
 	"preliminary_meeting" boolean NOT NULL,
 	PRIMARY KEY ("id")
 );
@@ -57,7 +57,7 @@ CREATE TABLE IF NOT EXISTS "booking" (
 
 CREATE TABLE IF NOT EXISTS "teacher_school_subject" (
 	"id" bigint NOT NULL,
-	"id_school_grade" bigint NOT NULL,
+	"id_school_grade" bigint default 1 NOT NULL,
 	"id_subject" bigint NOT NULL,
 	PRIMARY KEY ("id", "id_school_grade", "id_subject")
 );

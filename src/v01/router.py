@@ -349,6 +349,9 @@ def create_booking(booking_new: CreateBookingSchema , db: Session = Depends(get_
         db.rollback()
         logger.error(f"Error inserting booking: {e}")
         raise HTTPException(status_code=400, detail="Error inserting booking")
+    
+    gmail_send_mail_to(student.username, subject="Lezione prenotata", text=f"La lezione di {booking_new.subject.name} è stata prenotata con successo per il giorno {booking_new.start_datetime.date()} alle {booking_new.start_datetime.time().strftime('%H:%M')}.", title="Prenotazione effettuata!")
+    gmail_send_mail_to(teacher.username, subject="Lezione prenotata", text=f"La lezione di {booking_new.subject.name} è stata prenotata per il giorno {booking_new.start_datetime.date()} alle {booking_new.start_datetime.time().strftime('%H:%M')}.", title="Prenotazione effettuata!")
 
     return HTTPException(status_code=200, detail="Booking created successfully")
 
@@ -385,6 +388,9 @@ def delete_booking(id_booking: int, db: Session = Depends(get_db)):
 
     ## TODO: implement on cascade?
     db.commit()
+    gmail_send_mail_to(student.username, subject="Lezione cancellata", text=f"La lezione di {booking.subject.name} è stata cancellata con successo per il giorno {booking.start_datetime.date()} alle {booking.start_datetime.time().strftime('%H:%M')}.", title="Prenotazione cancellata!")
+    gmail_send_mail_to(teacher.username, subject="Lezione cancellata", text=f"La lezione di {booking.subject.name} è stata cancellata con successo per il giorno {booking.start_datetime.date()} alle {booking.start_datetime.time().strftime('%H:%M')}.", title="Prenotazione cancellata!")
+
     return HTTPException(status_code=200, detail="Booking deleted successfully")
 
 
