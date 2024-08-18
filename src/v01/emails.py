@@ -101,7 +101,7 @@ def gmail_create_draft():
 
     return draft
 
-def gmail_send_mail_to(recipient: str, subject: str, body_html: str):
+def gmail_send_mail_to(recipient: str, subject: str, **kwargs):
     """
     Send an HTML email to a specified recipient using Gmail API.
     
@@ -114,6 +114,14 @@ def gmail_send_mail_to(recipient: str, subject: str, body_html: str):
     dict: The sent message if successful, None otherwise
     """
     authorize()  # Ensure this is called to create/refresh the token
+
+    try:
+      with open("email_template.html") as file:
+          body_html = file.read()
+      body = jinja2.Template(body_html).render(kwargs)
+    except Exception as e:
+      print(e)
+      return None
     
     try:
         # Load credentials from the token.json file

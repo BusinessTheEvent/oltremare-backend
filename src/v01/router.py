@@ -15,7 +15,7 @@ from sqlalchemy.exc import IntegrityError
 from src.schemas import authentication_schemas as auth
 from src.default_logger import get_custom_logger
 from fastapi import HTTPException
-
+from src.v01.emails import gmail_send_mail_to
 
 logger = get_custom_logger(__name__)
 
@@ -61,6 +61,8 @@ def register_user(user: CreateUserSchema, db: Session = Depends(get_db)):
         raise HTTPException(status_code=400, detail="Invalid user type")
     
     db.commit()
+
+    gmail_send_mail_to(user.email, subject="Registrazione avvenuta con successo", text="La registrazione è avvenuta con successo. Benvenuto su Oltremare!", title="Benvenuto!")
 
     return
 
@@ -352,23 +354,6 @@ def update_booking(id_booking: int, booking: CreateBookingSchema, db: Session = 
 
     raise HTTPException(status_code=400, detail="Available with Pro Version")
 
-    booking = db.query(Booking).filter(Booking.id_booking == id_booking).first()
-
-    if booking is None:
-        raise HTTPException(status_code=404, detail="Booking not found")
-    
-    booking.start_datetime = booking.start_datetime
-    booking.end_datetime = booking.end_datetime
-    booking.duration = (booking.end_datetime - booking.end_datetime).seconds // 60
-    booking.id_student = booking.id_student
-    booking.id_teacher = booking.id_teacher
-    booking.id_subject = booking.id_subject
-    booking.id_school_grade = booking.id_school_grade
-    booking.notes = booking.notes
-    booking.attended = booking.attended
-
-    db.add(booking)
-    db.commit()
 
 #rimozione di una prenotazione
 @router.delete("/booking/{id_booking}")
