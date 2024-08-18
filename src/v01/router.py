@@ -378,7 +378,11 @@ def delete_booking(id_booking: int, db: Session = Depends(get_db)):
     today = datetime.datetime.now()
     if booking is None:
         raise HTTPException(status_code=404, detail="Booking not found")
-    elif booking.start_datetime < today + datetime.timedelta(hours=72):
+    
+    if booking.start_datetime < today:
+        raise HTTPException(status_code=400, detail="Cannot delete past bookings")
+    
+    if booking.start_datetime < today + datetime.timedelta(hours=72):
         raise HTTPException(status_code=400, detail="Cannot delete bookings before 72 hours from the start date")
     
     teacher = db.query(User).filter(User.id == booking.id_teacher).first()
