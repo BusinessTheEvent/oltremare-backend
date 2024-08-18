@@ -203,7 +203,6 @@ def update_preliminary_meeting(userId: int, preliminary_meeting: PreliminaryMeet
     
     student.preliminary_meeting = preliminary_meeting.done
 
-    db.add(student)
     db.commit()
 
     return {"message": "Preliminary meeting updated successfully"}
@@ -323,7 +322,7 @@ def create_booking(booking_new: CreateBookingSchema , db: Session = Depends(get_
         
         if not available:
             logger.info(f"One of the users not available in the selected time slot")
-            raise HTTPException(status_code=400, detail="Teacher not available in the selected time slot")
+            raise HTTPException(status_code=400, detail="Teacher not available in the selected time slot",)
 
         db.commit()
 
@@ -500,17 +499,11 @@ def update_message(id_message: int, db: Session = Depends(get_db)):
     
     message.is_read = True
 
-    db.add(message)
     db.commit()
 
     return {"message": "Message updated successfully"}
 
 @router.get("/test")
 def test(db: Session = Depends(get_db)):
-
-    utils.send_message(27, 26, "test1", db)
-    utils.send_message(27, 26, "test2", db)
-    utils.send_message(27, 26, "test3", db)
-    utils.send_message(27, 26, "test4", db)
 
     return True
