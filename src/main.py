@@ -1,17 +1,16 @@
 import platform
-from fastapi import FastAPI, Response, status
+from typing import Annotated
+from fastapi import Depends, FastAPI, Response, status
 from fastapi.security import OAuth2PasswordBearer
 from passlib.context import CryptContext
+from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import inspect, text
-from src.auth.models import Role, User
 from src.config import settings
-from src.auth.models import User
 import os
-from src.databases.db import create_all, engine_internal_auth, init_roles_table, init_users_table
+from src.databases.db import create_all, engine_internal, get_db, init_tables_with_file
 from src.default_logger import get_custom_logger
-from src.auth.router import router as auth_router
+from src.v01.router import router as v01_router
 from sqlalchemy.orm import Session
-from src.auth.middlewares import AuthCookieMiddleware
 
 logger = get_custom_logger(__name__)
 
@@ -25,14 +24,27 @@ ACCESS_TOKEN_DEFAULT_EXPIRE_MINUTES = 30
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
-app = FastAPI(version="1.0.3", title="FastAPI authentication core", description="This template provides a robust starting point for implementing authorization in your application. It includes features such as role-based access control, token-based authentication, and user management. The template is designed to be flexible and easy to integrate into existing projects, with clear documentation and modular code. Whether you're building a small application or a large, complex system, this authorization template can help you ensure that your resources are protected and only accessible to authorized users.")
+app = FastAPI(debug=True, version="1.0.3", title="FastAPI oltremare backend", description="")
 
-if settings.USE_COOKIES_AUTH:
-    app.add_middleware(AuthCookieMiddleware)
+if not settings.DEBUG and not settings.TESTING:
+    app.docs_url = None
+    app.redoc_url = None
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+            "http://0.0.0.0:4321",
+            "http://localhost:4321",
+            "http://frontend:4321",
+        ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 print("Using cookies for authentication: ", settings.USE_COOKIES_AUTH)
 
-app.include_router(auth_router, prefix="/auth")
+app.include_router(v01_router, prefix="/v01", tags=["v01"])
 
 
 @app.get("/")
@@ -62,13 +74,15 @@ def db_start():
         return
 
     current_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    db_url = str(engine_internal_auth.url)
+    db_url = str(engine_internal.url)
     db_path = db_url.split("///")[-1].replace("./", "")
     db_path = os.path.join(current_dir, db_path)
     
+    ## TODO: adapt for postgresql
+    
     if os.path.exists(db_path):
         logger.info("Database exists.")
-
+        
         if settings.AUTH_DATABASE_PURGE:
             logger.info("Purging database as environments tell.")
             yn = input("Are you sure you want to delete the database? (y/n): ")
@@ -86,7 +100,7 @@ def db_start():
         logger.info("Creating database.")
         create_all()
 
-    inspector = inspect(engine_internal_auth)
+    inspector = inspect(engine_internal)
     tables = inspector.get_table_names()
     if len(tables) == 0:
         logger.info("No tables found.")
@@ -106,7 +120,7 @@ def db_start():
 
                 logger.debug(f"End of table <{table}> inspection.")
 
-        with Session(engine_internal_auth) as session:
+        with Session(engine_internal) as session:
 
             empty_tables = []
 
@@ -127,18 +141,17 @@ def db_start():
                 logger.info(f"Filling empty tables ({empty_tables}) with default data from configuration.")
 
                 for table in empty_tables:
-                    if table == "roles":
-                        init_roles_table(Role)
-                    elif table == "users":
-                        init_users_table(User, Role, pwd_context)
-                    else:
-                        logger.info(f"Table <{table}> does not need to be initialized.")
+                    logger.info(f"Table <{table}> does not need to be initialized.")
             else:
                 logger.info("Tables will not be initialized as environments tell.")
 
     logger.info("Database initialization complete.")
 
 db_start()
+if(settings.AUTH_DATABASE_CHECK):
+    init_tables_with_file("src/databases/db_init.sql", db= Annotated[Session, Depends(get_db)])
+if(settings.AUTH_DATABASE_INIT_TABLES and settings.AUTH_DATABASE_CHECK):
+    init_tables_with_file("src/databases/db_populate.sql", db= Annotated[Session, Depends(get_db)])
 
 @app.get("/info")
 def get_hardware_info():

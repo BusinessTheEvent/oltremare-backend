@@ -30,6 +30,8 @@ class UserUsername(BaseModel):
 class UserBase(BaseModel):
     username: str
     name: str
+    surname: str
+    birthdate: datetime.datetime
     is_active: bool
     disabled: bool
     groups: list[GroupBase]
