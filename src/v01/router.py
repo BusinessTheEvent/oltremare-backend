@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from src.v01.models import Booking, Message, Teacher, TeacherSchoolSubject, Subject, SchoolGrade, AnagSlot, Student, User
 from src.databases.db import get_db
 from src.default_logger import get_custom_logger
-from src.schemas.v01_schemas import CreateBookingSchema, CreateUserSchema, BookingSchema, FullCalendarBookingSchema, IdSchema, MessageResponse, StudentInfoResponse, TeacherInfoResponse, SubjectSchema, UpdateUserSchema, UpdateStudentSchema, UpdateTeacherSchema
+from src.schemas.v01_schemas import CreateBookingSchema, CreateUserSchema, BookingSchema, FullCalendarBookingSchema, IdSchema, MessageResponse, PreliminaryMeetingSchema, StudentInfoResponse, TeacherInfoResponse, SubjectSchema, UpdateUserSchema, UpdateStudentSchema, UpdateTeacherSchema
 from fastapi import HTTPException
 from sqlalchemy import extract, or_
 from src.config import settings
@@ -71,13 +71,13 @@ def healtcheck():
 #accessibile solo da admin
 @router.get("/students/all", response_model=list[StudentInfoResponse])
 def get_all_students(db: Session = Depends(get_db))->list[StudentInfoResponse]:
-    users = db.query(Student).all()
+    users = db.query(Student).order_by(Student.id).all()
     return users
 
 #accessibile solo da admin
 @router.get("/teachers/all", response_model=list[TeacherInfoResponse])
 def get_all_teachers(db: Session = Depends(get_db))->list[TeacherInfoResponse]:
-    users = db.query(Teacher).all()
+    users = db.query(Teacher).order_by(Teacher.id).all()
     return users
 
 #accessibile solo da admin e insegnante (per gli studenti)
@@ -192,6 +192,22 @@ def get_is_teacher(user_id: int, db: Session = Depends(get_db)):
         return True
     else:
         return False
+    
+
+@router.patch("/students/update_preliminary_meeting/{userId}")
+def update_preliminary_meeting(userId: int, preliminary_meeting: PreliminaryMeetingSchema, db: Session = Depends(get_db)):
+    student = db.query(Student).filter(Student.id == userId).first()
+
+    if student is None:
+        raise HTTPException(status_code=404, detail="Student not found")
+    
+    student.preliminary_meeting = preliminary_meeting.done
+
+    db.add(student)
+    db.commit()
+
+    return {"message": "Preliminary meeting updated successfully"}
+    
 
 #accessibile solo da admin
 @router.get("/booking/all")

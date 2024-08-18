@@ -94,6 +94,7 @@ class FullCalendarBookingSchema(BaseModel):
 class StudentInfoResponse(BaseModel):
     user: User
     school_grade: Optional[SchoolGrade]
+    preliminary_meeting: Optional[bool]
 
 
 class TeacherInfoResponse(BaseModel):
@@ -114,3 +115,6 @@ class CreateUserSchema(BaseModel):
     password: str
     school: str
     type: str
+
+class PreliminaryMeetingSchema(BaseModel):
+    done: bool
