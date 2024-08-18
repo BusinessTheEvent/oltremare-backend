@@ -47,7 +47,12 @@ def register_user(user: CreateUserSchema, db: Session = Depends(get_db)):
         password=(user.password) ## TODO: hash password
     )
 
-    db.add(new_user)
+    try:
+        db.add(new_user)
+        db.commit()
+    except IntegrityError as e:
+        db.rollback()
+        raise HTTPException(status_code=409, detail="User already exists")
 
     if user.type == "student":
         new_student = Student(user=new_user, id_school_grade=SCHOOL_GRADES_DICT[user.school], preliminary_meeting=False)
@@ -59,8 +64,6 @@ def register_user(user: CreateUserSchema, db: Session = Depends(get_db)):
 
     else:
         raise HTTPException(status_code=400, detail="Invalid user type")
-    
-    db.commit()
 
     gmail_send_mail_to(user.email, subject="Registrazione avvenuta con successo", text="La registrazione è avvenuta con successo. Benvenuto su Oltremare!", title="Benvenuto!")
 
