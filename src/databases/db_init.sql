@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS users (
+CREATE TABLE IF NOT EXISTS "users" (
     "id" INTEGER PRIMARY KEY ,
     "username" VARCHAR UNIQUE,
     "name" VARCHAR,
@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS users (
     "password" VARCHAR
 );
 
-CREATE TABLE IF NOT EXISTS user_session (
+CREATE TABLE IF NOT EXISTS "user_session" (
     "id" TEXT PRIMARY KEY,
     "expires_at" TIMESTAMPTZ NOT NULL,
     "user_id" INTEGER NOT NULL REFERENCES users(id)
@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS "school_grade" (
 
 CREATE TABLE IF NOT EXISTS "student" (
 	"id" bigint NOT NULL,
-	"id_school_grade" bigint NOT NULL,
+	"id_school_grade" bigint default 1 NOT NULL,
 	"preliminary_meeting" boolean NOT NULL,
 	PRIMARY KEY ("id")
 );
@@ -57,7 +57,7 @@ CREATE TABLE IF NOT EXISTS "booking" (
 
 CREATE TABLE IF NOT EXISTS "teacher_school_subject" (
 	"id" bigint NOT NULL,
-	"id_school_grade" bigint NOT NULL,
+	"id_school_grade" bigint default 1 NOT NULL,
 	"id_subject" bigint NOT NULL,
 	PRIMARY KEY ("id", "id_school_grade", "id_subject")
 );

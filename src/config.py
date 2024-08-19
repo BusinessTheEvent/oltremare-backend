@@ -51,8 +51,9 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_NOW: int = 5 # (seconds)
 
     # EMAILING
-    GOOGLE_TOKEN_PATH: str = ""
-    GOOGLE_CREDENTIALS_PATH: str = ""
+    SENDER_EMAIL: str = ""
+    SENDER_PASSWORD: str = ""
+
 
     # Licenses
     USE_LICENSES: bool = False

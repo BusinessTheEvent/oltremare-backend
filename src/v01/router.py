@@ -15,7 +15,7 @@ from sqlalchemy.exc import IntegrityError
 from src.schemas import authentication_schemas as auth
 from src.default_logger import get_custom_logger
 from fastapi import HTTPException
-
+from src.v01.emails import gmail_send_mail_to
 
 logger = get_custom_logger(__name__)
 
@@ -32,6 +32,11 @@ logger = get_custom_logger(__name__)
 
 @router.put("/users/register")
 def register_user(user: CreateUserSchema, db: Session = Depends(get_db)):
+
+    # Check if the password is strong enough
+    if len(user.password) < 8:
+        raise HTTPException(status_code=400, detail="Password must be at least 8 characters long")
+
     # Create a new user
     new_user = User(
         username=user.email,
@@ -60,7 +65,13 @@ def register_user(user: CreateUserSchema, db: Session = Depends(get_db)):
     else:
         raise HTTPException(status_code=400, detail="Invalid user type")
     
-    db.commit()
+    try:
+        db.commit()
+    except IntegrityError as e:
+        db.rollback()
+        raise HTTPException(status_code=409, detail="User already exists")
+
+    gmail_send_mail_to(user.email, subject="Registrazione avvenuta con successo", text="La registrazione è avvenuta con successo. Benvenuto su Oltremare!", title="Benvenuto!")
 
     return
 
@@ -344,6 +355,9 @@ def create_booking(booking_new: CreateBookingSchema , db: Session = Depends(get_
         db.rollback()
         logger.error(f"Error inserting booking: {e}")
         raise HTTPException(status_code=400, detail="Error inserting booking")
+    
+    gmail_send_mail_to(student.username, subject="Lezione prenotata", text=f"La lezione di {new_booking.subject.name} è stata prenotata con successo per il giorno {new_booking.start_datetime.date()} alle {new_booking.start_datetime.time().strftime('%H:%M')}.", title="Prenotazione effettuata!")
+    gmail_send_mail_to(teacher.username, subject="Lezione prenotata", text=f"La lezione di {new_booking.subject.name} è stata prenotata per il giorno {new_booking.start_datetime.date()} alle {new_booking.start_datetime.time().strftime('%H:%M')}.", title="Prenotazione effettuata!")
 
     return HTTPException(status_code=200, detail="Booking created successfully")
 
@@ -352,33 +366,23 @@ def update_booking(id_booking: int, booking: CreateBookingSchema, db: Session = 
 
     raise HTTPException(status_code=400, detail="Available with Pro Version")
 
-    booking = db.query(Booking).filter(Booking.id_booking == id_booking).first()
-
-    if booking is None:
-        raise HTTPException(status_code=404, detail="Booking not found")
-    
-    booking.start_datetime = booking.start_datetime
-    booking.end_datetime = booking.end_datetime
-    booking.duration = (booking.end_datetime - booking.end_datetime).seconds // 60
-    booking.id_student = booking.id_student
-    booking.id_teacher = booking.id_teacher
-    booking.id_subject = booking.id_subject
-    booking.id_school_grade = booking.id_school_grade
-    booking.notes = booking.notes
-    booking.attended = booking.attended
-
-    db.add(booking)
-    db.commit()
 
 #rimozione di una prenotazione
 @router.delete("/booking/{id_booking}")
 def delete_booking(id_booking: int, db: Session = Depends(get_db)):
     booking = db.query(Booking).filter(Booking.id_booking == id_booking).first()
+    subject_name = booking.subject.name
+    start_datetime = booking.start_datetime
+
 
     today = datetime.datetime.now()
     if booking is None:
         raise HTTPException(status_code=404, detail="Booking not found")
-    elif booking.start_datetime < today + datetime.timedelta(hours=72):
+    
+    if booking.start_datetime < today:
+        raise HTTPException(status_code=400, detail="Cannot delete past bookings")
+    
+    if booking.start_datetime < today + datetime.timedelta(hours=72):
         raise HTTPException(status_code=400, detail="Cannot delete bookings before 72 hours from the start date")
     
     teacher = db.query(User).filter(User.id == booking.id_teacher).first()
@@ -393,6 +397,10 @@ def delete_booking(id_booking: int, db: Session = Depends(get_db)):
 
     ## TODO: implement on cascade?
     db.commit()
+
+    gmail_send_mail_to(student.username, subject="Lezione cancellata", text=f"La lezione di {subject_name} è stata cancellata per il giorno {start_datetime.date()} alle {start_datetime.time().strftime('%H:%M')}.", title="Prenotazione cancellata!")
+    gmail_send_mail_to(teacher.username, subject="Lezione cancellata", text=f"La lezione di {subject_name} è stata cancellata per il giorno {start_datetime.date()} alle {start_datetime.time().strftime('%H:%M')}.", title="Prenotazione cancellata!")
+
     return HTTPException(status_code=200, detail="Booking deleted successfully")
 
 
