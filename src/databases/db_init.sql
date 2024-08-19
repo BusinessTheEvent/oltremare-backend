@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS users (
+CREATE TABLE IF NOT EXISTS "users" (
     "id" INTEGER PRIMARY KEY ,
     "username" VARCHAR UNIQUE,
     "name" VARCHAR,
@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS users (
     "password" VARCHAR
 );
 
-CREATE TABLE IF NOT EXISTS user_session (
+CREATE TABLE IF NOT EXISTS "user_session" (
     "id" TEXT PRIMARY KEY,
     "expires_at" TIMESTAMPTZ NOT NULL,
     "user_id" INTEGER NOT NULL REFERENCES users(id)
