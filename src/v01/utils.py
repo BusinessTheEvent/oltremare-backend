@@ -38,27 +38,27 @@ def check_lesson_availability(booking_to_do: CreateBookingSchema, db: Session = 
     query = text(f"""
     SELECT a.campo1 AS id_slot, SUM(campo2) AS n_posti_disponibili 
     FROM (
-        (
-            SELECT id_slot AS campo1, 8 AS campo2 
-            FROM anag_slot
-            WHERE id_slot NOT IN (
-                SELECT DISTINCT bs.id_slot 
-                FROM public.booking b 
-                JOIN public.booking_slot bs ON b.id_booking = bs.id_booking
-                WHERE b.start_datetime >= to_timestamp('{booking_to_do.start_datetime.date()} 00:00:00', 'YYYY-MM-DD HH24:MI:SS') 
-                  AND b.start_datetime < to_timestamp('{booking_to_do.start_datetime.date()} 00:00:00', 'YYYY-MM-DD HH24:MI:SS') + interval '1 day'
-                  AND (id_student = {booking_to_do.id_student} OR id_teacher = {booking_to_do.id_teacher})
-            )
+      (
+        SELECT id_slot AS campo1, 8 AS campo2 
+        FROM anag_slot
+        WHERE id_slot NOT IN (
+          SELECT DISTINCT bs.id_slot 
+          FROM public.booking b 
+          JOIN public.booking_slot bs ON b.id_booking = bs.id_booking
+          WHERE b.start_datetime BETWEEN to_timestamp('{booking_to_do.start_datetime.date()} 00:00:00', 'YYYY-MM-DD HH24:MI:SS') 
+            AND to_timestamp('{booking_to_do.start_datetime.date()} 23:59:59', 'YYYY-MM-DD HH24:MI:SS')
+            AND (id_student = {booking_to_do.id_student} OR id_teacher = {booking_to_do.id_teacher})
         )
-        UNION
-        (
-            SELECT bs.id_slot, (COUNT(1) * -1) AS campo2 
-            FROM public.booking b 
-            JOIN public.booking_slot bs ON b.id_booking = bs.id_booking
-            WHERE b.start_datetime >= to_timestamp('{booking_to_do.start_datetime.date()} 00:00:00', 'YYYY-MM-DD HH24:MI:SS') 
-              AND b.start_datetime < to_timestamp('{booking_to_do.start_datetime.date()} 00:00:00', 'YYYY-MM-DD HH24:MI:SS') + interval '1 day'
-            GROUP BY bs.id_slot
-        )
+      )
+      UNION
+      (
+        SELECT bs.id_slot, (COUNT(1) * -1) AS campo2 
+        FROM public.booking b 
+        JOIN public.booking_slot bs ON b.id_booking = bs.id_booking
+        WHERE b.start_datetime BETWEEN to_timestamp('{booking_to_do.start_datetime.date()} 00:00:00', 'YYYY-MM-DD HH24:MI:SS') 
+          AND to_timestamp('{booking_to_do.start_datetime.date()} 23:59:59', 'YYYY-MM-DD HH24:MI:SS')
+        GROUP BY bs.id_slot
+      )
     ) a
     GROUP BY a.campo1 
     ORDER BY a.campo1
