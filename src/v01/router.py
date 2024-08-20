@@ -324,7 +324,7 @@ def create_booking(booking_new: CreateBookingSchema , db: Session = Depends(get_
         end_index = utils.hour_to_index(booking_new.end_datetime) 
 
         for slot in slots:
-            if slot.id_slot >= start_index and slot.id_slot <= end_index:
+            if slot.id_slot >= start_index and slot.id_slot < end_index:
                 new_booking.slots.append(slot)
         
         db.add(new_booking)
