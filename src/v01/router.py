@@ -71,7 +71,7 @@ def register_user(user: CreateUserSchema, db: Session = Depends(get_db)):
         db.rollback()
         raise HTTPException(status_code=409, detail="User already exists")
 
-    gmail_send_mail_to(user.email, subject="Registrazione avvenuta con successo", text="La registrazione è avvenuta con successo. Benvenuto su Oltremare!", title="Benvenuto!")
+    gmail_send_mail_to(user.email, subject="Registrazione avvenuta con successo", text="La registrazione è avvenuta con successo. Benvenuto su Oltremare!<br>Se non hai svolto tu questa operazione ti preghiamo di ignorare questa email ed eliminarla, grazie.", title="Benvenuto!")
 
     return
 
@@ -139,11 +139,13 @@ def update_student(student_id: int, student1: UpdateStudentSchema, db: Session =
         if student is None:
             raise HTTPException(status_code=404, detail="Student not found")
 
+        student.user.name = student1.name
+        student.user.surname = student1.surname
         student.user.username = student1.username
-        student.user.password = student1.password
+        if student1.password and student1.password.strip():
+            student.user.password = student1.password
         student.id_school_grade = student1.id_school_grade
 
-        db.add(student)
         db.commit()
         
         return {"message": "Student updated successfully"}
@@ -159,8 +161,11 @@ def update_teacher_school_subject(teacher_id: int, teacher1: UpdateTeacherSchema
         if teacher is None:
             raise HTTPException(status_code=404, detail="Teacher not found")
         
+        teacher.user.name = teacher1.name
+        teacher.user.surname = teacher1.surname
         teacher.user.username = teacher1.username
-        #teacher.user.password = teacher1.password ## FIXME: do better password setting
+        if teacher1.password and teacher1.password.strip():
+            teacher.user.password = teacher1.password
 
         # Update the subjects taught by the teacher
         for subject in teacher1.teacher_subjects: # for every checkbox in the frontend list
@@ -179,7 +184,6 @@ def update_teacher_school_subject(teacher_id: int, teacher1: UpdateTeacherSchema
                 elif teacher_subject_level is not None and not level.isChecked:
                     db.delete(teacher_subject_level)
 
-        db.add(teacher)
         db.commit()
         return {"message": "Teacher subjects updated successfully"}
     
@@ -188,6 +192,27 @@ def update_teacher_school_subject(teacher_id: int, teacher1: UpdateTeacherSchema
         db.rollback()
         raise HTTPException(status_code=500, detail="Error updating teacher subjects")
 
+#update dei campi username, password di chief
+@router.patch("/users/update/{user_id}")
+def update_user(user_id: int, user: UpdateUserSchema, db: Session = Depends(get_db)):
+    try:
+        user_db = db.query(User).filter(User.id == user_id).first()
+
+        if user_db is None:
+            raise HTTPException(status_code=404, detail="User not found")
+        
+        user_db.name = user.name
+        user_db.surname = user.surname
+        user_db.username = user.username
+        if user.password and user.password.strip():
+            user_db.password = user.password
+
+        db.commit()
+        
+        return {"message": "User updated successfully"}
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail="Error updating user")
 
 @router.get("/users/{user_id}")
 def get_user(user_id: int, db: Session = Depends(get_db)):
@@ -278,13 +303,13 @@ def get_booking(id_booking: int, db: Session = Depends(get_db)) -> BookingSchema
 #tutte le prenotazioi di uno studente
 @router.get("/booking/student/{id_student}", response_model=list[BookingSchema])
 def get_student_booking(id_student: int, db: Session = Depends(get_db)) -> list[BookingSchema]:
-    books = db.query(Booking).filter(Booking.id_student == id_student).all()
+    books = db.query(Booking).filter(Booking.id_student == id_student).order_by(Booking.start_datetime).all()
     return books
 
 #prenotazioni di un insegnante
 @router.get("/booking/teacher/{id_teacher}", response_model=list[BookingSchema])
 def get_teacher_booking(id_teacher: int, db: Session = Depends(get_db)) -> list[BookingSchema]:
-    bookings = db.query(Booking).filter(Booking.id_teacher == id_teacher).all()
+    bookings = db.query(Booking).filter(Booking.id_teacher == id_teacher).order_by(Booking.start_datetime).all()
     return bookings
 
 #accessibile solo da admin e studente
@@ -293,6 +318,10 @@ def get_teacher_booking(id_teacher: int, db: Session = Depends(get_db)) -> list[
 def create_booking(booking_new: CreateBookingSchema , db: Session = Depends(get_db)):    
     ## TODO: add secutiry checks
     ## TODO: make utility function to execute complex query safely
+
+    preliminary_meeting = db.query(Student).filter(Student.id == booking_new.id_student).first().preliminary_meeting
+    if preliminary_meeting is False:
+        raise HTTPException(status_code=403, detail="Preliminary meeting not done")
 
     if booking_new.start_datetime < datetime.datetime.now() + datetime.timedelta(hours=72):
         logger.info(f"Cannot book a lesson before 72 hours from the start date")

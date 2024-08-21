@@ -18,11 +18,15 @@ class User(BaseModel):
     birthdate: Optional[datetime.date]
 
 class UpdateUserSchema(BaseModel):
+    name: Optional[str]
+    surname: Optional[str]
     username: Optional[str]
     password: Optional[str]
 
 class UpdateStudentSchema(BaseModel):
     id_school_grade: Optional[int]
+    name: Optional[str]
+    surname: Optional[str]
     password: Optional[str]
     username: Optional[str]
 
@@ -42,6 +46,8 @@ class SubjectPatchSchema(BaseModel):
     levels: Optional[list[SchoolLevelSchema]]
 
 class UpdateTeacherSchema(BaseModel):
+    name: Optional[str]
+    surname: Optional[str]
     username: Optional[str]
     password: Optional[str]
     teacher_subjects: Optional[list[SubjectPatchSchema]]
