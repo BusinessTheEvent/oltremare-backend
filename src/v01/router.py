@@ -133,6 +133,10 @@ def get_teacher_subjects(teacher_id: int, db: Session = Depends(get_db)):
 #update dei campi username, password, id_schoolgrade di uno studente
 @router.patch("/students/update/{student_id}")
 def update_student(student_id: int, student1: UpdateStudentSchema, db: Session = Depends(get_db)):
+
+    if student1.username and db.query(User).filter(User.username.ilike(student1.username)).first():
+        raise HTTPException(status_code=409, detail="Username already exists")
+
     try:
         student = db.query(Student).filter(Student.id == student_id).first()
 
@@ -141,7 +145,7 @@ def update_student(student_id: int, student1: UpdateStudentSchema, db: Session =
 
         student.user.name = student1.name
         student.user.surname = student1.surname
-        student.user.username = student1.username
+        student.user.username = student1.username if student1.username else student.user.username
         if student1.password and student1.password.strip():
             student.user.password = student1.password
         student.id_school_grade = student1.id_school_grade
@@ -155,6 +159,10 @@ def update_student(student_id: int, student1: UpdateStudentSchema, db: Session =
     
 @router.patch("/teachers/update/{teacher_id}")
 def update_teacher_school_subject(teacher_id: int, teacher1: UpdateTeacherSchema, db: Session = Depends(get_db)):
+
+    if teacher1.username and db.query(User).filter(User.username.ilike(teacher1.username)).first():
+        raise HTTPException(status_code=409, detail="Username already exists")
+    
     try:
         teacher = db.query(Teacher).filter(Teacher.id == teacher_id).first()
 
@@ -163,7 +171,7 @@ def update_teacher_school_subject(teacher_id: int, teacher1: UpdateTeacherSchema
         
         teacher.user.name = teacher1.name
         teacher.user.surname = teacher1.surname
-        teacher.user.username = teacher1.username
+        teacher.user.username = teacher1.username if teacher1.username else teacher.user.username
         if teacher1.password and teacher1.password.strip():
             teacher.user.password = teacher1.password
 
@@ -195,6 +203,10 @@ def update_teacher_school_subject(teacher_id: int, teacher1: UpdateTeacherSchema
 #update dei campi username, password di chief
 @router.patch("/users/update/{user_id}")
 def update_user(user_id: int, user: UpdateUserSchema, db: Session = Depends(get_db)):
+
+    if user.username and db.query(User).filter(User.username.ilike(user.username)).first():
+        raise HTTPException(status_code=409, detail="Username already exists")
+
     try:
         user_db = db.query(User).filter(User.id == user_id).first()
 
@@ -203,7 +215,7 @@ def update_user(user_id: int, user: UpdateUserSchema, db: Session = Depends(get_
         
         user_db.name = user.name
         user_db.surname = user.surname
-        user_db.username = user.username
+        user_db.username = user.username if user.username else user_db.username
         if user.password and user.password.strip():
             user_db.password = user.password
 
@@ -318,6 +330,12 @@ def get_teacher_booking(id_teacher: int, db: Session = Depends(get_db)) -> list[
 def create_booking(booking_new: CreateBookingSchema , db: Session = Depends(get_db)):    
     ## TODO: add secutiry checks
     ## TODO: make utility function to execute complex query safely
+
+
+    if booking_new.start_datetime.weekday() >=5:
+        logger.info(f"Cannot book a lesson on weekends")
+        raise HTTPException(status_code=400, detail="Cannot book a lesson on weekends")
+
 
     preliminary_meeting = db.query(Student).filter(Student.id == booking_new.id_student).first().preliminary_meeting
     if preliminary_meeting is False:

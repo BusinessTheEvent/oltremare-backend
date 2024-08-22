@@ -82,10 +82,10 @@ VALUES
 ('Gaia@gmail.com', 'Gaia', 'Gaia', '1978-03-03', 'password15', true, false, '2024-07-03 12:00:00', '2024-07-12 12:00:00', '2024-07-03 12:00:00', '2024-12-31 23:59:59'),
 
 --- altre materie ---
-('Aurora.Barban@gmail.com', 'Aurora', 'Barban', '1978-03-03', 'password16', true, false, '2024-07-03 12:00:00', '2024-07-12 12:00:00', '2024-07-03 12:00:00', '2024-12-31 23:59:59'),
+('Aurora@gmail.com', 'Aurora', 'Barban', '1978-03-03', 'password16', true, false, '2024-07-03 12:00:00', '2024-07-12 12:00:00', '2024-07-03 12:00:00', '2024-12-31 23:59:59'),
 
 --- psicologa di formazione per compiti elementari e medie per ragazzi certificati
-('Valeria.Valeria@gmail.com', 'Valeria', 'Valeria', '1978-03-03', 'password17', true, false, '2024-07-03 12:00:00', '2024-07-12 12:00:00', '2024-07-03 12:00:00', '2024-12-31 23:59:59'),
+('Valeria@gmail.com', 'Valeria', 'Valeria', '1978-03-03', 'password17', true, false, '2024-07-03 12:00:00', '2024-07-12 12:00:00', '2024-07-03 12:00:00', '2024-12-31 23:59:59'),
 
 ('Marco.T@gmail.com', 'Marco', 'T', '1978-03-03', 'password18', true, false, '2024-07-03 12:00:00', '2024-07-12 12:00:00', '2024-07-03 12:00:00', '2024-12-31 23:59:59'),
 -- Utenti che sono studenti (student)
