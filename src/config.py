@@ -50,9 +50,11 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_SECONDS: int = 30 ## for testing purposes only
     ACCESS_TOKEN_EXPIRE_NOW: int = 5 # (seconds)
 
-    # EMAILING
-    SENDER_EMAIL: str = ""
-    SENDER_PASSWORD: str = ""
+    # SMTP
+    SMTP_HOST: str = ""
+    SMTP_PORT: int = None
+    SMTP_SENDER_EMAIL: str = ""
+    SMTP_PASSWORD: str = ""
 
 
     # Licenses
