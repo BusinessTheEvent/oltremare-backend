@@ -40,8 +40,8 @@ def gmail_send_mail_to(recipient: str, subject: str, **kwargs):
         print(f"An error occurred: {e}")
         return None
 
-if __name__ == "__main__":
-    recipient="mario@yopmail.com"
-    subject="Test email"
+# if __name__ == "__main__":
+#     recipient="mario@yopmail.com"
+#     subject="Test email"
 
-    gmail_send_mail_to(recipient=recipient, subject=subject, title="Title", text="Body")
+#     gmail_send_mail_to(recipient=recipient, subject=subject, title="Title", text="Body")

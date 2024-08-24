@@ -52,8 +52,7 @@ class Settings(BaseSettings):
 
     # EMAILING
     SENDER_EMAIL: str = ""
-    SENDER_PASSWORD: str = ""
-
+    SENDER_PASSWORD: SecretStr = ""
 
     # Licenses
     USE_LICENSES: bool = False
