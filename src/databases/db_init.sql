@@ -89,6 +89,23 @@ CREATE TABLE IF NOT EXISTS "messages" (
 	PRIMARY KEY ("id_message")
 );
 
+
+-- Create the function to lowercase the username
+CREATE OR REPLACE FUNCTION lowercase_username()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.username := LOWER(NEW.username);
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Create the trigger to call the function before insert
+CREATE TRIGGER before_insert_user
+BEFORE INSERT ON users
+FOR EACH ROW
+EXECUTE FUNCTION lowercase_username();
+
+
 ALTER TABLE "messages" ADD CONSTRAINT "messages_fk1" FOREIGN KEY ("id_sender") REFERENCES "users"("id");
 ALTER TABLE "messages" ADD CONSTRAINT "messages_fk2" FOREIGN KEY ("id_receiver") REFERENCES "users"("id");
 
