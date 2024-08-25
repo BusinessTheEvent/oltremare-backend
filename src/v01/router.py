@@ -16,6 +16,7 @@ from src.schemas import authentication_schemas as auth
 from src.default_logger import get_custom_logger
 from fastapi import HTTPException
 from src.v01.emails import gmail_send_mail_to
+import bcrypt
 
 logger = get_custom_logger(__name__)
 
@@ -37,6 +38,14 @@ def register_user(user: CreateUserSchema, db: Session = Depends(get_db)):
     if len(user.password) < 8:
         raise HTTPException(status_code=400, detail="Password must be at least 8 characters long")
 
+    ## hash password
+    try:
+        salt = bcrypt.gensalt()
+        password_hash = bcrypt.hashpw(user.password.encode('utf-8'), salt).decode('utf-8')
+    except Exception as e:
+        logger.error(f"Error hashing password: {e}")
+        raise HTTPException(status_code=500, detail="Error hashing password")
+
     # Create a new user
     new_user = User(
         username=user.email,
@@ -49,7 +58,7 @@ def register_user(user: CreateUserSchema, db: Session = Depends(get_db)):
         role=2,
         groups=[],
         is_application=False,
-        password=(user.password) ## TODO: hash password
+        password=password_hash
     )
 
     db.add(new_user)
@@ -142,12 +151,22 @@ def update_student(student_id: int, student1: UpdateStudentSchema, db: Session =
 
         if student is None:
             raise HTTPException(status_code=404, detail="Student not found")
+        
+        
 
         student.user.name = student1.name
         student.user.surname = student1.surname
         student.user.username = student1.username if student1.username else student.user.username
+        
         if student1.password and student1.password.strip():
-            student.user.password = student1.password
+            try:
+                salt = bcrypt.gensalt()
+                password_hash = bcrypt.hashpw(student1.password.encode('utf-8'), salt).decode('utf-8')
+            except Exception as e:
+                logger.error(f"Error hashing password: {e}")
+                raise HTTPException(status_code=500, detail="Error hashing password")
+            student.user.password = password_hash
+            
         student.id_school_grade = student1.id_school_grade
 
         db.commit()
@@ -173,7 +192,13 @@ def update_teacher_school_subject(teacher_id: int, teacher1: UpdateTeacherSchema
         teacher.user.surname = teacher1.surname
         teacher.user.username = teacher1.username if teacher1.username else teacher.user.username
         if teacher1.password and teacher1.password.strip():
-            teacher.user.password = teacher1.password
+            try:
+                salt = bcrypt.gensalt()
+                password_hash = bcrypt.hashpw(teacher1.password.encode('utf-8'), salt).decode('utf-8')
+            except Exception as e:
+                logger.error(f"Error hashing password: {e}")
+                raise HTTPException(status_code=500, detail="Error hashing password")
+            teacher.user.password = password_hash
 
         # Update the subjects taught by the teacher
         for subject in teacher1.teacher_subjects: # for every checkbox in the frontend list
@@ -216,14 +241,21 @@ def update_user(user_id: int, user: UpdateUserSchema, db: Session = Depends(get_
         user_db.name = user.name
         user_db.surname = user.surname
         user_db.username = user.username if user.username else user_db.username
-        if user.password and user.password.strip():
-            user_db.password = user.password
+        
+        try:
+            salt = bcrypt.gensalt()
+            password_hash = bcrypt.hashpw(user.password.encode('utf-8'), salt).decode('utf-8')
+        except Exception as e:
+            logger.error(f"Error hashing password: {e}")
+            raise HTTPException(status_code=500, detail="Error hashing password")
+        user_db.password = password_hash
 
         db.commit()
         
         return {"message": "User updated successfully"}
     except Exception as e:
         db.rollback()
+        logger.error(f"Error updating user: {e}")
         raise HTTPException(status_code=500, detail="Error updating user")
 
 @router.get("/users/{user_id}")
@@ -330,7 +362,6 @@ def get_teacher_booking(id_teacher: int, db: Session = Depends(get_db)) -> list[
 def create_booking(booking_new: CreateBookingSchema , db: Session = Depends(get_db)):    
     ## TODO: add secutiry checks
     ## TODO: make utility function to execute complex query safely
-
 
     if booking_new.start_datetime.weekday() >=5:
         logger.info(f"Cannot book a lesson on weekends")
