@@ -4,7 +4,6 @@ from email.mime.text import MIMEText
 import jinja2
 from src.config import settings
 
-
 def gmail_send_mail_to(recipient: str, subject: str, **kwargs):
     sender_email = settings.SENDER_EMAIL
     sender_password = settings.SENDER_PASSWORD
@@ -28,7 +27,7 @@ def gmail_send_mail_to(recipient: str, subject: str, **kwargs):
       try:
           # Connect to the Gmail SMTP server
           with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
-              server.login(sender_email, sender_password)
+              server.login(sender_email, sender_password.get_secret_value())
               server.sendmail(sender_email, recipient, msg.as_string())
           print("Email sent successfully")
 
