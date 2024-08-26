@@ -71,3 +71,23 @@ def init_tables_with_file(file, db: Session):
         logger.info(f"Table <{file}> initialized.")
     else:
         logger.error(f"File <{file}> does not exist.")
+
+
+def insert_chief():
+    import bcrypt
+
+    salt = bcrypt.gensalt()
+    hashed_pwd = bcrypt.hashpw("changeme".encode('utf-8'), salt).decode('utf-8')
+
+    with Session(engine_internal) as db:
+        try:
+            query = f"""
+            INSERT INTO public.users (username, name, surname, birthdate, password, is_active, disabled, registered_at, last_login, date_init_validity) 
+             VALUES ('admin@example.com', 'Martina', 'Lucarda', '1995-08-08', '{hashed_pwd}', true, false, '2024-07-08 17:00:00', '2024-07-18 17:00:00', '2024-07-08 17:00:00');"""
+            with engine_internal.connect() as conn:
+                conn.execute(text(query))
+                conn.commit()
+        
+
+        except Exception as e:
+            logger.error(f"Error while inserting chief: {e}")

@@ -2,8 +2,8 @@ import datetime
 from decimal import Decimal
 from sqlalchemy import Column, Integer, String, Boolean, Numeric, ForeignKey, DateTime, Date, Time
 from sqlalchemy.orm import relationship
-from src.databases.db import Base
 from sqlalchemy import Table
+from src.databases.db import Base
 
 booking_anag_slot = Table('booking_slot', Base.metadata,
     Column('id_booking', Integer, ForeignKey('booking.id_booking'), primary_key=True),

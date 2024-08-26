@@ -7,7 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import inspect, text
 from src.config import settings
 import os
-from src.databases.db import create_all, engine_internal, get_db, init_tables_with_file
+from src.databases.db import create_all, engine_internal, get_db, init_tables_with_file, insert_chief
 from src.default_logger import get_custom_logger
 from src.v01.router import router as v01_router
 from sqlalchemy.orm import Session
@@ -151,6 +151,7 @@ db_start()
 if(settings.AUTH_DATABASE_CHECK):
     init_tables_with_file("src/databases/db_init.sql", db= Annotated[Session, Depends(get_db)])
 if(settings.AUTH_DATABASE_INIT_TABLES and settings.AUTH_DATABASE_CHECK):
+    insert_chief()
     init_tables_with_file("src/databases/db_populate.sql", db= Annotated[Session, Depends(get_db)])
 
 @app.get("/info")
