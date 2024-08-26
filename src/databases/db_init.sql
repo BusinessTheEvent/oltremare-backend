@@ -89,6 +89,13 @@ CREATE TABLE IF NOT EXISTS "messages" (
 	PRIMARY KEY ("id_message")
 );
 
+CREATE TABLE IF NOT EXISTS "user_otp" (
+	"id_user"  bigint NOT NULL UNIQUE,
+	"otp" varchar(32) NOT NULL,
+	"expire_datetime" timestamp with time zone NOT NULL,
+	FOREIGN KEY ("id_user") REFERENCES "users"("id")
+);
+
 
 -- Create the function to lowercase the username
 CREATE OR REPLACE FUNCTION lowercase_username()

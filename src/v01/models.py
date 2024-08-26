@@ -184,3 +184,12 @@ class Message(Base):
 
     sender = relationship('User', foreign_keys=[id_sender])
     receiver = relationship('User', foreign_keys=[id_receiver])
+
+
+class UserOtp(Base):
+    __tablename__ = 'user_otp'
+    id_user = Column(Integer, ForeignKey('users.id'), primary_key=True)
+    otp = Column(String, nullable=False)
+    expire_datetime = Column(DateTime, nullable=False)
+
+    user = relationship('User', lazy='joined')

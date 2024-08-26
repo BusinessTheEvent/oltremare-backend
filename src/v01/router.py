@@ -1,8 +1,9 @@
 from decimal import Decimal
+import random
 from typing import Annotated
 from fastapi import APIRouter, Depends, Request
 from sqlalchemy.orm import Session
-from src.v01.models import Booking, Message, Teacher, TeacherSchoolSubject, Subject, SchoolGrade, AnagSlot, Student, User
+from src.v01.models import Booking, Message, Teacher, TeacherSchoolSubject, Subject, SchoolGrade, AnagSlot, Student, User, UserOtp
 from src.databases.db import get_db
 from src.default_logger import get_custom_logger
 from src.schemas.v01_schemas import CreateBookingSchema, CreateUserSchema, BookingSchema, FullCalendarBookingSchema, IdSchema, MessageResponse, PreliminaryMeetingSchema, StudentInfoResponse, TeacherInfoResponse, SubjectSchema, UpdateUserSchema, UpdateStudentSchema, UpdateTeacherSchema
@@ -589,7 +590,49 @@ def update_message(id_message: int, db: Session = Depends(get_db)):
 
     return {"message": "Message updated successfully"}
 
+
+@router.get("/reset_password/{hash}")
+def reset_password(hash: str, db: Session = Depends(get_db)): ## to get from frontend {user_id:int, hash:str, new_password:str}
+    otp = db.query(UserOtp).filter(UserOtp.otp == hash).first()
+
+    if otp is None:
+        raise HTTPException(status_code=404, detail="OTP not found")
+
+    if otp.expire_datetime < datetime.datetime.now():
+        raise HTTPException(status_code=400, detail="OTP expired")
+    
+    if otp.expire_datetime > datetime.datetime.now() and hash == otp.otp:
+        ##  TODO: update password of user
+        pass
+
+    return {"email": otp.id}
+
+
+
+@router.get("/reset_password/otp")
+def send_otp(email: str, db: Annotated[Session, Depends(get_db)]):
+    user = db.query(User).filter(User.username == email).first()
+
+    if user is None:
+        logger.info(f"User with email {email} not found")
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    hash = str(random.getrandbits(128).to_bytes(16, 'big').hex())
+    message = f"""Per resettare la password clicca il seguente link: <a href="http://localhost:8000/reset_password/{hash}">Reset Password</a>. Sarà valido per un'ora."""
+
+    try:
+        new_object = UserOtp(id_user=user.id, otp=hash, expire_datetime=datetime.datetime.now() + datetime.timedelta(hours=1))
+        db.add(new_object)
+        db.commit()
+    except Exception as e:
+        db.rollback()
+        logger.error(f"Error generating OTP: {e}")
+        raise HTTPException(status_code=500, detail="Error generating OTP")
+
+    gmail_send_mail_to(email, subject="Reset della password", text=message, title="Codice OTP")
+
+
 @router.get("/test")
 def test(db: Session = Depends(get_db)):
-
+    send_otp("riccardo@comellato.name", db)
     return True
