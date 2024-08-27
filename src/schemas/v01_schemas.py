@@ -124,3 +124,10 @@ class CreateUserSchema(BaseModel):
 
 class PreliminaryMeetingSchema(BaseModel):
     done: bool
+
+class EmailSchema(BaseModel):
+    email: str
+
+class ResetPasswordSchema(BaseModel):
+    password: str
+    code: str
