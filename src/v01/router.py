@@ -640,7 +640,7 @@ def send_otp(data: Annotated[EmailSchema, None], db: Annotated[Session, Depends(
         raise HTTPException(status_code=404, detail="User not found")
     
     hash = str(random.getrandbits(128).to_bytes(16, 'big').hex())
-    message = f"""Per resettare la password clicca il seguente link: <a href="http://localhost:4321/restorePsw?code={hash}">Reset Password</a>. Sarà valido per un'ora."""
+    message = f"""Per resettare la password clicca il seguente link: <a href="https://doposcuola.martinalucardapsicologa.it/restorePsw?code={hash}">Reset Password</a>. Sarà valido per un'ora."""
 
     try:
         new_object = UserOtp(id_user=user.id, otp=hash, expire_datetime=datetime.datetime.now() + datetime.timedelta(hours=1))
