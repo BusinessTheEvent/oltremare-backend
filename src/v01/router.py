@@ -26,6 +26,8 @@ END_HOUR = 18
 SLOT_DURATION = 30
 SLOTS_IN_HOUR = 60 // SLOT_DURATION
 
+FOREWARING_HOURS = 48
+
 SCHOOL_GRADES_DICT = {'Elementari': 1, 'Medie': 2, 'Superiori': 3}
 SCHOOL_GRADES_DICT_REVERSE = {1: 'Elementari', 2: 'Medie', 3: 'Superiori'}
 
@@ -373,8 +375,8 @@ def create_booking(booking_new: CreateBookingSchema , db: Session = Depends(get_
     if preliminary_meeting is False:
         raise HTTPException(status_code=403, detail="Preliminary meeting not done")
 
-    if booking_new.start_datetime < datetime.datetime.now() + datetime.timedelta(hours=72):
-        logger.info(f"Cannot book a lesson before 72 hours from the start date")
+    if booking_new.start_datetime < datetime.datetime.now() + datetime.timedelta(hours=FOREWARING_HOURS):
+        logger.info(f"Cannot book a lesson before FOREWARING_HOURS hours from the start date")
         raise HTTPException(status_code=400, detail="Cannot book a lesson before 72 hours from the start date")
 
     ## availability check
