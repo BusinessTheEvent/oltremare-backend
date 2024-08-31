@@ -294,8 +294,20 @@ def update_preliminary_meeting(userId: int, preliminary_meeting: PreliminaryMeet
 #accessibile solo da admin
 @router.get("/booking/all")
 def get_all_booking(db: Session = Depends(get_db)):
-    booking = db.query(Booking).all()
-    return booking
+    bookings = db.query(Booking, Teacher).join(Teacher, Booking.id_teacher == Teacher.id).all()
+    result = []
+    for booking, teacher in bookings:
+        result.append({
+            'id_booking': booking.id_booking,
+            'title': teacher.user.name + " " + teacher.user.surname,
+            'start': booking.start_datetime,
+            'end': booking.end_datetime,
+            'name': booking.name,
+            'name_teacher': teacher.user.name,
+            'surname_teacher': teacher.user.surname,
+            'allDay': "false"
+        })
+    return result
 
 #get teacher group by subject
 @router.get("/booking/get_teacher_by_school_and_subject/{id_school_grade}/{id_subject}")
@@ -340,7 +352,6 @@ def get_all_students_booking(db: Session = Depends(get_db)) -> list[BookingSchem
     students_bookings = db.query(Booking).all()
 
     return students_bookings
-
 #accessibile da tutti
 @router.get("/booking/{id_booking}", response_model=BookingSchema)
 def get_booking(id_booking: int, db: Session = Depends(get_db)) -> BookingSchema:
@@ -437,8 +448,29 @@ def create_booking(booking_new: CreateBookingSchema , db: Session = Depends(get_
         logger.error(f"Error inserting booking: {e}")
         raise HTTPException(status_code=400, detail="Error inserting booking")
     
-    gmail_send_mail_to(student.username, subject="Lezione prenotata", text=f"La lezione di {new_booking.subject.name} è stata prenotata con successo per il giorno {new_booking.start_datetime.date()} alle {new_booking.start_datetime.time().strftime('%H:%M')}.", title="Prenotazione effettuata!")
-    gmail_send_mail_to(teacher.username, subject="Lezione prenotata", text=f"La lezione di {new_booking.subject.name} è stata prenotata per il giorno {new_booking.start_datetime.date()} alle {new_booking.start_datetime.time().strftime('%H:%M')}.", title="Prenotazione effettuata!")
+    ## controls for the email event attachment (only premium subscription)
+    if settings.ADD_ICS_EVENTS:
+        ics_student = utils.generate_ics_file(f"Lezione di {new_booking.subject.name} con {teacher.name}", booking_new.start_datetime, booking_new.end_datetime, location= "Online")
+        ics_teacher = utils.generate_ics_file(f"Lezione di {new_booking.subject.name} con {student.name}", booking_new.start_datetime, booking_new.end_datetime, location= "Online")
+    else:
+        ics_student = None
+        ics_teacher = None
+
+    gmail_send_mail_to(student.username,
+                       subject="Lezione prenotata",
+                       text=f"La lezione di {new_booking.subject.name} è stata prenotata con successo per il giorno {new_booking.start_datetime.date()} alle {new_booking.start_datetime.time().strftime('%H:%M')}.",
+                       title="Prenotazione effettuata!",
+                       attachment=ics_student,
+                       attachment_filename=f"Lezione_{new_booking.subject.name}.ics"
+                    )
+    
+    gmail_send_mail_to(teacher.username,
+                       subject="Lezione prenotata",
+                       text=f"La lezione di {new_booking.subject.name} è stata prenotata per il giorno {new_booking.start_datetime.date()} alle {new_booking.start_datetime.time().strftime('%H:%M')}.",
+                       title="Prenotazione effettuata!",
+                       attachment=ics_teacher,
+                       attachment_filename=f"Lezione_{new_booking.subject.name}.ics"
+                    )
 
     return HTTPException(status_code=200, detail="Booking created successfully")
 

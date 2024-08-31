@@ -36,4 +36,4 @@ dailyscheduler
 google-api-python-client
 google-auth-httplib2
 google-auth-oauthlib
-jinja2
+jinja2ics

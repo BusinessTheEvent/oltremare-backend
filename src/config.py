@@ -36,6 +36,7 @@ class Settings(BaseSettings):
 
     # Other options
     USE_COOKIES_AUTH: bool = False
+    ADD_ICS_EVENTS: bool = False
 
     # Files
     FILEPATH_ROOT: str = "default"

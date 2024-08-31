@@ -1,5 +1,6 @@
 #controllo 8 lezioni massime in contemporanea in totale
 import datetime
+import io
 from fastapi import Depends, HTTPException
 from pytest import Session
 from sqlalchemy import text
@@ -7,6 +8,8 @@ from src.databases.db import get_db
 from src.schemas.v01_schemas import CreateBookingSchema, UpdateUserSchema, TeacherSchoolSubjectSchema, User
 from src.v01.models import Message, Subject, Student
 from src.default_logger import get_custom_logger
+import datetime
+from ics import Calendar, Event
 
 logger = get_custom_logger(__name__)
 
@@ -145,3 +148,21 @@ def send_message(sender_id: int, receiver_id: int, message: str, db: Session = D
 #     return teacher
 
   
+
+def generate_ics_file(title: str, begin: datetime.date, end: datetime.date, location: str = "")->io.StringIO:
+    
+    c = Calendar()
+    e = Event()
+    e.name = title
+    e.begin = begin
+    e.end = end  # Add the end time to the event
+    e.location = location
+    c.events.add(e)
+    
+    ics_stream = io.StringIO()
+    ics_stream.writelines(c.serialize_iter())
+    ics_stream.seek(0)  # Move the cursor to the beginning of the stream
+    
+    logger.info(f"Succesfully generated ICS file for event")
+
+    return ics_stream
