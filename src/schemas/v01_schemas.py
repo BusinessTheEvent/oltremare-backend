@@ -21,7 +21,7 @@ class UpdateUserSchema(BaseModel):
     name: Optional[str]
     surname: Optional[str]
     username: Optional[str]
-    password: Optional[str]
+    password: Optional[str] = None
 
 class UpdateStudentSchema(BaseModel):
     id_school_grade: Optional[int]
