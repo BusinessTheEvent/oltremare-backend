@@ -249,9 +249,10 @@ def update_user(user_id: int, user: UpdateUserSchema, db: Session = Depends(get_
             if user.password and user.password.strip(): ## checks for password to not be None or spaces only
                 salt = bcrypt.gensalt()
                 password_hash = bcrypt.hashpw(user.password.encode('utf-8'), salt).decode('utf-8')
+                user_db.password = password_hash
         except Exception as e:
             logger.error(f"Error hashing password: {e}")
-        user_db.password = password_hash
+        
 
         db.commit()
         
